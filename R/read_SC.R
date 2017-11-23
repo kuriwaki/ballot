@@ -4,13 +4,18 @@
 #'
 #' @param paths a vector of paths of the county-directory
 #'
+#' @importFrom foreach foreach
+#'
 #' @export
 read_format_EL155 <- function(paths) {
 
   # countynames
   cnames <- gsub("[0-9A-z/_]+/([A-z]+)", "\\1", paths)
 
-  all_race <- foreach(i = 1:length(paths), .combine = "bind_rows") %do% {
+  all_race <- foreach(i = 1:length(paths),
+                      .inorder = TRUE,
+                      .combine = "bind_rows",
+                      .packages = c("ballot", "dplyr")) %dopar% {
 
     rows <- read_EL155(path = glue("{paths[i]}/EL155"), cname = cnames[i])
 
@@ -244,11 +249,11 @@ identify_voter <- function(df) {
 #' @param df A dataset with county and voter ID
 #' @param state state
 #'
-#' @import maps purrr
+#' @importFrom maps county.fips
+#' @import purrr
 #' @export
 #'
 add_unique_id <- function(df, state = "SC", year = "2010") {
-  require(maps)
   data(county.fips)
 
   max_d_v <- str_length(as.character(max(df$voter_id)))
@@ -264,5 +269,5 @@ add_unique_id <- function(df, state = "SC", year = "2010") {
     mutate(voter_id = paste0(fips, "-", str_pad(as.character(id_within_county), max_d_v, pad = "0"))) %>%
     mutate(precinct_id = paste0(fips, "-", str_pad(as.character(precinct_id), max_d_p, pad = "0"))) %>%
     select(-id_within_county) %>%
-    select(voter_id, county, voter_id, precinct_id, everything())
+    select(voter_id, county, fips, voter_id, precinct_id, everything())
 }
