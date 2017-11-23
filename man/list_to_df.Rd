@@ -14,3 +14,10 @@ list_to_df(lst, votes)
 \description{
 Convert parsed list to data frame
 }
+\examples{
+allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
+ald_p <- get_precinct_range(allendale)
+wprecinct <- add_precinct(allendale, ald_p)
+lst <- parse_EL155(wprecinct)
+df <- list_to_df(lst, wprecinct)
+}

@@ -171,6 +171,7 @@ add_precinct <- function(votes, pkey) {
 #'
 #' @import stringr purrr
 #'
+#' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 #' ald_p <- get_precinct_range(allendale)
 #' wprecinct <- add_precinct(allendale, ald_p)
@@ -188,8 +189,9 @@ parse_EL155 <- function(votes, vote_col = "text",
 #' @param lst list which is a product of parse_EL155
 #' @param votes dataset of votes to be combined to parsed list. Must be in right ordersame order
 #'
-#' @import tibble purrr
+#' @import tibble purrr dplyr
 #'
+#' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 #' ald_p <- get_precinct_range(allendale)
 #' wprecinct <- add_precinct(allendale, ald_p)
@@ -197,7 +199,6 @@ parse_EL155 <- function(votes, vote_col = "text",
 #' df <- list_to_df(lst, wprecinct)
 
 list_to_df <- function(lst, votes) {
-
   tbl <- tibble(marker = map_chr(lst, 3),
                 cand_id = map_chr(lst, 4),
                 cand_name = map_chr(lst, 5),

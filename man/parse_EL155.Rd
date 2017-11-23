@@ -22,3 +22,10 @@ they need to be a product of get_precinct_range()
 Data looks like
 \code{5123906    2 *   10 Nikki R Haley                           GOVERNOR}
 }
+\examples{
+allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
+ald_p <- get_precinct_range(allendale)
+wprecinct <- add_precinct(allendale, ald_p)
+lst <- parse_EL155(wprecinct)
+
+}
