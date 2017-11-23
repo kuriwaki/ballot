@@ -4,6 +4,7 @@
 #'
 #' @param paths a vector of paths of the county-directory
 #'
+#' @export
 read_format_EL155 <- function(paths) {
 
   # countynames
@@ -32,7 +33,7 @@ read_format_EL155 <- function(paths) {
 #' @param path path to raw file
 #' @param cname county name
 #'
-#'
+#' @export
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 #'
@@ -89,6 +90,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #' is the name portion of the precinct header. `precinct_id` is the ID of
 #' precinct within the county
 #'
+#' @export
 #'
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
@@ -125,7 +127,7 @@ get_precinct_range <- function(df) {
 #' @param pkey precinct key, product of get_precinct_range()
 #'
 #' @import data.table
-#'
+#' @export
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 #' ald_p <- get_precinct_range(allendale)
@@ -164,6 +166,7 @@ add_precinct <- function(votes, pkey) {
 #' Data looks like
 #' \code{5123906    2 *   10 Nikki R Haley                           GOVERNOR}
 #'
+#' @export
 #' @param votes data frame with row
 #' @param vote_col column name (in characters) where the votes are
 #' @param start_pos numerical vector of start char positions
@@ -190,7 +193,7 @@ parse_EL155 <- function(votes, vote_col = "text",
 #' @param votes dataset of votes to be combined to parsed list. Must be in right ordersame order
 #'
 #' @import tibble purrr dplyr
-#'
+#' @export
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 #' ald_p <- get_precinct_range(allendale)
@@ -222,6 +225,7 @@ list_to_df <- function(lst, votes) {
 #' Use cumsum to find jumps in the asterisk
 #'
 #' @import dplyr
+#' @export
 #'
 #' @param df a data frame where each row is a birth. The column `voter_top`
 #' is 1 if the entry is the first vote on the ballot and 0 otherwise.
@@ -241,6 +245,7 @@ identify_voter <- function(df) {
 #' @param state state
 #'
 #' @import maps purrr
+#' @export
 #'
 add_unique_id <- function(df, state = "SC", year = "2010") {
   require(maps)
