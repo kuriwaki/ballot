@@ -19,3 +19,8 @@ precinct within the county
 Get a precinct-level dataset by using dplyr::distinct(.keep_all = TRUE).
 Thus the rows need to be ordered correctly.
 }
+\examples{
+allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
+ald_p <- get_precinct_range(allendale)
+wprecinct <- add_precinct(allendale, ald_p)
+}

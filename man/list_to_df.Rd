@@ -2,15 +2,15 @@
 % Please edit documentation in R/read_SC.R
 \name{list_to_df}
 \alias{list_to_df}
-\title{Change list of row-wise vectors to df}
+\title{Convert parsed list to data frame}
 \usage{
 list_to_df(lst, votes)
 }
 \arguments{
-\item{lst}{list, each item is a row}
+\item{lst}{list which is a product of parse_EL155}
 
-\item{votes}{data frame of votes}
+\item{votes}{dataset of votes to be combined to parsed list. Must be in right ordersame order}
 }
 \description{
-Note: time consuming
+Convert parsed list to data frame
 }

@@ -12,5 +12,11 @@ add_precinct(votes, pkey)
 \item{pkey}{precinct key, product of get_precinct_range()}
 }
 \description{
-Add precinct to each row of vote dataset, and remove other headers
+Use the non-equi join in data.table to identify precinct. row i is in
+precinct j if i's ID is in between p_Start_id and p_end_id of precint j.
+}
+\examples{
+allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
+ald_p <- get_precinct_range(allendale)
+wprecinct <- add_precinct(allendale, ald_p)
 }

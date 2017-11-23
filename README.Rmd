@@ -1,0 +1,20 @@
+---
+title: "ballot"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Installation
+
+```{r, eval = FALSE}
+library(ballot)
+```
+
+
+
+## Sources
+
+* https://www.scvotes.org/election-audits-south-carolina

@@ -4,7 +4,7 @@
 \alias{read_EL155}
 \title{Read a EL155 file}
 \usage{
-read_EL155(path = "build/input/SC_2010/Allendale/EL155",
+read_EL155(path = "build/input/SC_2010Gen/Allendale/EL155",
   cname = "Allendale")
 }
 \arguments{
@@ -14,4 +14,8 @@ read_EL155(path = "build/input/SC_2010/Allendale/EL155",
 }
 \description{
 Read a EL155 file
+}
+\examples{
+allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
+
 }
