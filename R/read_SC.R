@@ -249,19 +249,20 @@ identify_voter <- function(df) {
 #' @param df A dataset with county and voter ID
 #' @param state state
 #'
-#' @importFrom maps county.fips
-#' @import purrr
+#' @import noncensus purrr
 #' @export
 #'
-add_unique_id <- function(df, state = "SC", year = "2010") {
-  data(county.fips)
+add_unique_id <- function(df, state = "SC") {
+  data(counties)
+
 
   max_d_v <- str_length(as.character(max(df$voter_id)))
   max_d_p <- str_length(as.character(max(df$precinct_id)))
 
-  state_fips <- county.fips %>%
-    filter(grepl("south carolina", polyname)) %>%
-    mutate(county = str_to_title(gsub("south carolina,", "", polyname))) %>%
+  state_fips <- counties %>%
+    filter(state == state) %>%
+    mutate(county = str_to_title(gsub(" County", "", county_name))) %>%
+    mutate(fips = paste0(state_fips, "-", county_fips)) %>%
     select(fips, county)
 
   left_join(df, state_fips, by = c("county")) %>%

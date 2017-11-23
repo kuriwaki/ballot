@@ -4,7 +4,7 @@
 \alias{add_unique_id}
 \title{Add unique ID for each voter in a race.}
 \usage{
-add_unique_id(df, state = "SC", year = "2010")
+add_unique_id(df, state = "SC")
 }
 \arguments{
 \item{df}{A dataset with county and voter ID}
