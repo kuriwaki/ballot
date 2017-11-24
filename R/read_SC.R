@@ -27,7 +27,9 @@ read_format_EL155 <- function(paths) {
     parsed_df <- list_to_df(parsed_list, wprecinct)
     wvoter <- identify_voter(parsed_df)
 
-    wvoter
+    wIDs  <- add_unique_id(wvoter)
+
+    wIDs
   }
 
   all_race
@@ -77,6 +79,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
     filter(!grepl("^\\s+General Election\\s+[0-9+]", text)) %>% # in Marlbolo, precinct footer
     filter(!grepl("^\\s+[A-z]+\\sCounty\\s*$", text)) %>% # Fairfield and Jasper County
     filter(!grepl("^\\s+test\\s*$", text)) %>% # Beaufort footer
+    filter(!grepl("^\\s+Official", text)) %>% # Lexington 2016 footer
     filter(!grepl("CAND VOTES", text)) %>%
     filter(!grepl("PRECINCT TOTALS", text))
 
@@ -253,16 +256,17 @@ identify_voter <- function(df) {
 #' @export
 #'
 add_unique_id <- function(df, state = "SC") {
+
   data(counties)
 
 
-  max_d_v <- str_length(as.character(max(df$voter_id)))
-  max_d_p <- str_length(as.character(max(df$precinct_id)))
+  max_d_v <- str_length(as.character(max(df$voter_id, na.rm = TRUE)))
+  max_d_p <- str_length(as.character(max(df$precinct_id, na.rm = TRUE)))
 
   state_fips <- counties %>%
     filter(state == state) %>%
     mutate(county = str_to_title(gsub(" County", "", county_name))) %>%
-    mutate(fips = paste0(state_fips, "-", county_fips)) %>%
+    mutate(fips = paste0(state_fips, county_fips)) %>%
     select(fips, county)
 
   left_join(df, state_fips, by = c("county")) %>%
