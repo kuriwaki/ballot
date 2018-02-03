@@ -12,27 +12,35 @@ read_format_EL155 <- function(paths) {
   # countynames
   cnames <- gsub(".*/([A-z]+)$", "\\1", paths)
 
-  all_race <- foreach(i = 1:length(paths),
-                      .inorder = TRUE,
-                      .combine = "bind_rows",
-                      .packages = c("ballot", "dplyr")) %dopar% {
+  all_race <-
+    foreach(i = 1:length(paths),
+            .inorder = TRUE,
+            .combine = "bind_rows",
+            .packages = c("ballot", "dplyr")) %dopar% {
 
-    el155name <- grep("EL155", list.files(paths[i]), value = TRUE, ignore.case = TRUE)
-    rows <- read_EL155(path = glue("{paths[i]}/{el155name}"), cname = cnames[i])
+              el155name <- grep("EL155", list.files(paths[i]), value = TRUE, ignore.case = TRUE)
 
-    pkey <- get_precinct(rows)
-    wprecinct <- add_precinct(rows, pkey)
+              # rarely there are more than one EL155 file
+              rows <- foreach(elpath = glue("{paths[i]}/{el155name}"), .combine = "bind_rows") %do% {
+                read_EL155(path = elpath, cname = cnames[i])}
 
-    parsed_df <- parse_EL155(votes = wprecinct)
-    wvoter <- identify_voter(parsed_df)
+              # if two, re-index
+              if (rows$id[nrow(rows)] != nrow(rows)) rows <- mutate(rows, id = 1:n()) # re-index if composite
 
 
-    wIDs  <- add_id(wvoter)
-    rm(wvoter, parsed_df, rows)
-    gc()
+              pkey <- get_precinct(rows)
+              wprecinct <- add_precinct(rows, pkey)
 
-    wIDs
-  }
+              parsed_df <- parse_EL155(votes = wprecinct)
+              wvoter <- identify_voter(parsed_df)
+
+
+              wIDs  <- add_id(wvoter)
+              rm(wvoter, parsed_df, rows)
+              gc()
+
+              wIDs
+            }
 
   all_race
 }
@@ -78,7 +86,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 
 
   n_precincts <- nonempty %>% filter(grepl("CAND VOTES", text)) %>% nrow()
-  cat(glue("{cname} code {eID} - with {n_precincts} precincts; "))
+  cat(glue("{cname} code {eID} - with {n_precincts} precincts, "), "\n")
 
   df <- nonempty %>%
     filter(!grepl("^[\\s\\d]+$", text, perl = TRUE)) %>%
@@ -202,16 +210,16 @@ parse_EL155 <-
            end_pos =   c(7, 12, 14, 19, 59, 131),
            col_names = c("machine", "ballot_style", "marker", "cand_id", "cand_name", "race")) {
 
-  covariates <- select(votes, -one_of(vote_col))
+    covariates <- select(votes, -one_of(vote_col))
 
-  concat <- str_c(votes[[vote_col]], collapse = "\n")
-  fwf <- read_fwf(concat, col_positions = fwf_positions(start_pos, end_pos, col_names))
+    concat <- str_c(votes[[vote_col]], collapse = "\n")
+    fwf <- suppressWarnings(read_fwf(concat, col_positions = fwf_positions(start_pos, end_pos, col_names)))
 
- bind_cols(covariates, fwf)  %>%
-   mutate(machine = as.character(machine)) %>%
-   mutate(voter_top = coalesce(as.integer(marker == "*"), 0L)) %>%
-   select(-marker)
-}
+    bind_cols(covariates, fwf)  %>%
+      mutate(machine = as.character(machine)) %>%
+      mutate(voter_top = coalesce(as.integer(marker == "*"), 0L)) %>%
+      select(-marker)
+  }
 
 
 
@@ -244,7 +252,7 @@ identify_voter <- function(df) {
 #'
 add_id <- function(df, st = "SC") {
 
-  data(counties)
+  data("counties")
 
 
   max_d_v <- str_length(as.character(max(df$voter_id, na.rm = TRUE)))
