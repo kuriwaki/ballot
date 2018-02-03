@@ -40,7 +40,12 @@ read_format_EL155 <- function(paths) {
 #' @param path path to raw file
 #' @param cname county name
 #'
+#' @import readr
+#' @import dplyr
+#' @import glue
+#'
 #' @export
+#'
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 #'
@@ -179,53 +184,34 @@ add_precinct <- function(votes, pkey) {
 #' @param vote_col column name (in characters) where the votes are
 #' @param start_pos numerical vector of start char positions
 #' @param end_pos numerical vector of end char positions
+#' @param col_names names of variables for each column
 #'
 #' @import stringr purrr
+#' @import readr
+#' @import stringr str_c
 #'
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 #' ald_p <- get_precinct_range(allendale)
 #' wprecinct <- add_precinct(allendale, ald_p)
-#' lst <- parse_EL155(wprecinct)
+#' df <- parse_EL155(wprecinct)
 #'
-parse_EL155 <- function(votes, vote_col = "text",
-                        start_pos = c(1,  9, 14, 16, 21, 61),
-                        end_pos =   c(7, 12, 14, 19, 59, 131)) {
-  map(votes[[vote_col]], ~ str_sub(., start_pos, end_pos))
+parse_EL155 <-
+  function(votes, vote_col = "text",
+           start_pos = c(1,  9, 14, 16, 21, 61),
+           end_pos =   c(7, 12, 14, 19, 59, 131),
+           col_names = c("machine", "ballot_style", "marker", "cand_id", "cand_name", "race")) {
+
+  covariates <- select(votes, -one_of(vote_col))
+
+  concat <- str_c(votes[[vote_col]], collapse = "\n")
+  fwf <- read_fwf(concat, col_positions = fwf_positions(start_pos, end_pos, col_names))
+
+ bind_cols(covariates, fwf)  %>%
+   mutate(voter_top = coalesce(as.integer(marker == "*"), 0L)) %>%
+   select(-marker)
 }
 
-
-#' Convert parsed list to data frame
-#'
-#' @param lst list which is a product of parse_EL155
-#' @param votes dataset of votes to be combined to parsed list. Must be in right ordersame order
-#'
-#' @import tibble purrr dplyr
-#' @export
-#' @examples
-#' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-#' ald_p <- get_precinct_range(allendale)
-#' wprecinct <- add_precinct(allendale, ald_p)
-#' lst <- parse_EL155(wprecinct)
-#' df <- list_to_df(lst, wprecinct)
-
-list_to_df <- function(lst, votes) {
-  tbl <- tibble(marker = map_chr(lst, 3),
-                cand_id = map_chr(lst, 4),
-                cand_name = map_chr(lst, 5),
-                race = map_chr(lst, 6))
-
-  # trim
-  tbl <- mutate_all(tbl, str_trim)
-
-  # change marker to numeric
-  tbl <- tbl %>%
-    mutate(voter_top = as.numeric(marker == "*")) %>%
-    select(-marker)
-
-  bind_cols(select(votes, -text),
-            tbl)
-}
 
 
 #' assign individual voter ID by reading the asterisk mark
@@ -250,12 +236,12 @@ identify_voter <- function(df) {
 #' This implies adding county and voter_id within county
 #'
 #' @param df A dataset with county and voter ID
-#' @param state state
+#' @param st state
 #'
 #' @import noncensus purrr
 #' @export
 #'
-add_unique_id <- function(df, state = "SC") {
+add_unique_id <- function(df, st = "SC") {
 
   data(counties)
 
@@ -264,7 +250,7 @@ add_unique_id <- function(df, state = "SC") {
   max_d_p <- str_length(as.character(max(df$precinct_id, na.rm = TRUE)))
 
   state_fips <- counties %>%
-    filter(state == state) %>%
+    filter(state == st) %>%
     mutate(county = str_to_title(gsub(" County", "", county_name))) %>%
     mutate(fips = paste0(state_fips, county_fips)) %>%
     select(fips, county)
