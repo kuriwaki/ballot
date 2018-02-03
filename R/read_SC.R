@@ -17,16 +17,19 @@ read_format_EL155 <- function(paths) {
                       .combine = "bind_rows",
                       .packages = c("ballot", "dplyr")) %dopar% {
 
-    rows <- read_EL155(path = glue("{paths[i]}/EL155"), cname = cnames[i])
+    el155name <- grep("EL155", list.files(paths[i]), value = TRUE, ignore.case = TRUE)
+    rows <- read_EL155(path = glue("{paths[i]}/{el155name}"), cname = cnames[i])
 
     pkey <- get_precinct_range(rows)
     wprecinct <- add_precinct(rows, pkey)
-    rm(rows)
 
     parsed_df <- parse_EL155(votes = wprecinct)
     wvoter <- identify_voter(parsed_df)
 
+
     wIDs  <- add_unique_id(wvoter)
+    rm(wvoter, parsed_df, rows)
+    gc()
 
     wIDs
   }
