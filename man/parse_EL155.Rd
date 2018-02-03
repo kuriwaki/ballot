@@ -5,7 +5,8 @@
 \title{separate vote rows in to columns}
 \usage{
 parse_EL155(votes, vote_col = "text", start_pos = c(1, 9, 14, 16, 21, 61),
-  end_pos = c(7, 12, 14, 19, 59, 131))
+  end_pos = c(7, 12, 14, 19, 59, 131), col_names = c("machine",
+  "ballot_style", "marker", "cand_id", "cand_name", "race"))
 }
 \arguments{
 \item{votes}{data frame with row}
@@ -15,6 +16,8 @@ parse_EL155(votes, vote_col = "text", start_pos = c(1, 9, 14, 16, 21, 61),
 \item{start_pos}{numerical vector of start char positions}
 
 \item{end_pos}{numerical vector of end char positions}
+
+\item{col_names}{names of variables for each column}
 }
 \description{
 Use fwf to separate out colums in vote rows. Entries need to be votes, thus
@@ -26,6 +29,6 @@ Data looks like
 allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 ald_p <- get_precinct_range(allendale)
 wprecinct <- add_precinct(allendale, ald_p)
-lst <- parse_EL155(wprecinct)
+df <- parse_EL155(wprecinct)
 
 }

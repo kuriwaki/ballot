@@ -20,14 +20,14 @@ read_format_EL155 <- function(paths) {
     el155name <- grep("EL155", list.files(paths[i]), value = TRUE, ignore.case = TRUE)
     rows <- read_EL155(path = glue("{paths[i]}/{el155name}"), cname = cnames[i])
 
-    pkey <- get_precinct_range(rows)
+    pkey <- get_precinct(rows)
     wprecinct <- add_precinct(rows, pkey)
 
     parsed_df <- parse_EL155(votes = wprecinct)
     wvoter <- identify_voter(parsed_df)
 
 
-    wIDs  <- add_unique_id(wvoter)
+    wIDs  <- add_id(wvoter)
     rm(wvoter, parsed_df, rows)
     gc()
 
@@ -54,7 +54,7 @@ read_format_EL155 <- function(paths) {
 read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
                        cname = "Allendale") {
 
-  raw <-  tibble(text = read_lines(path)) %>%
+  raw <-  tibble(text = suppressWarnings(read_lines(path))) %>%
     mutate(id = 1:n(),
            county = cname) %>%
     select(id, county, text)
@@ -109,9 +109,9 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #'
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-#' ald_p <- get_precinct_range(allendale)
+#' ald_p <- get_precinct(allendale)
 #' wprecinct <- add_precinct(allendale, ald_p)
-get_precinct_range <- function(df) {
+get_precinct <- function(df) {
   pfirst <- df %>%
     filter(grepl("RUN DATE", text, perl = TRUE)) %>%
     distinct(text, .keep_all = TRUE)
@@ -188,9 +188,7 @@ add_precinct <- function(votes, pkey) {
 #' @param end_pos numerical vector of end char positions
 #' @param col_names names of variables for each column
 #'
-#' @import stringr purrr
-#' @import readr
-#' @import stringr str_c
+#' @import stringr purrr readr
 #'
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
@@ -210,6 +208,7 @@ parse_EL155 <-
   fwf <- read_fwf(concat, col_positions = fwf_positions(start_pos, end_pos, col_names))
 
  bind_cols(covariates, fwf)  %>%
+   mutate(machine = as.character(machine)) %>%
    mutate(voter_top = coalesce(as.integer(marker == "*"), 0L)) %>%
    select(-marker)
 }
@@ -243,7 +242,7 @@ identify_voter <- function(df) {
 #' @import noncensus purrr
 #' @export
 #'
-add_unique_id <- function(df, st = "SC") {
+add_id <- function(df, st = "SC") {
 
   data(counties)
 
