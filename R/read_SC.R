@@ -10,7 +10,7 @@
 read_format_EL155 <- function(paths) {
 
   # countynames
-  cnames <- gsub("[0-9A-z/_]+/([A-z]+)", "\\1", paths)
+  cnames <- gsub(".*/([A-z]+)$", "\\1", paths)
 
   all_race <- foreach(i = 1:length(paths),
                       .inorder = TRUE,
@@ -23,8 +23,7 @@ read_format_EL155 <- function(paths) {
     wprecinct <- add_precinct(rows, pkey)
     rm(rows)
 
-    parsed_list <- parse_EL155(votes = wprecinct)
-    parsed_df <- list_to_df(parsed_list, wprecinct)
+    parsed_df <- parse_EL155(votes = wprecinct)
     wvoter <- identify_voter(parsed_df)
 
     wIDs  <- add_unique_id(wvoter)
