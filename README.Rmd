@@ -1,5 +1,5 @@
 ---
-title: "ballot"
+title: "`ballot`"
 output: github_document
 ---
 
@@ -7,14 +7,77 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Installation
-
-```{r, eval = FALSE}
+```{r, include = FALSE}
+dir <- "~/Dropbox/local-representation"
+library(noncensus)
+library(tidyverse)
+library(foreach)
 library(ballot)
+library(purrr)
+library(data.table)
 ```
 
 
 
-## Sources
+```{r, eval = FALSE}
+devtools::install_github("kuriwaki/ballot")
+```
 
-* https://www.scvotes.org/election-audits-south-carolina
+
+
+# Procedure
+
+## `read_EL155`
+
+Read the EL155 file (raw file output for ballot images) and format. 
+
+```{r}
+p2016 <- read_EL155(file.path(dir, "build/input/SC_2016-06-14/Spartanburg/EL155"), "Spartanburg")
+```
+
+## `get_precinct`
+
+Add precinct identifier to each row
+
+```{r}
+pkey <- get_precinct_range(p2016)
+head(pkey)
+p2016_precinct <- add_precinct(p2016, pkey)
+p2016_precinct
+```
+
+## `parse_EL155`
+
+Parse the text with pre-specified fixed width. 
+```{r}
+p2016_parsed <- parse_EL155(p2016_precinct)
+p2016_parsed
+```
+
+
+## `identify_voter`
+
+Add a unique ID for each voter
+```{r}
+with_voter <- identify_voter(p2016_parsed)
+```
+
+
+## `add_unique_id`
+
+Add voter identifier that will be unique with many counties
+
+```{r}
+df <- add_unique_id(with_voter)
+
+```
+
+Finally, cast the long dataset to wide, to voter level
+
+```{r}
+tbl <- dcast(as.data.table(df),  voter_id ~ race, value.var = "cand_name") %>% 
+  tbl_df()
+
+tbl
+```
+
