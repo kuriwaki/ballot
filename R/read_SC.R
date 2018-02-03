@@ -79,14 +79,16 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 
 
   # extract info before dropping metadata
-  eID <- valid %>% filter(grepl("RUN DATE", text)) %>% distinct(text) %>%
+  eID <- valid %>%
+    filter(grepl("(RUN DATE|ELECTION ID:)", text)) %>%
+    distinct(text) %>%
     mutate(election_ID = gsub(".*ID: ([0-9A-Z]+)$", "\\1", text)) %>%
     distinct(election_ID) %>%
     unlist()
 
 
   n_precincts <- nonempty %>% filter(grepl("CAND VOTES", text)) %>% nrow()
-  cat(glue("{cname} code {eID} - with {n_precincts} precincts, "), "\n")
+  cat(glue("{cname} (code {eID}) with {n_precincts} precincts, "), "\n")
 
   df <- nonempty %>%
     filter(!grepl("^[\\s\\d]+$", text, perl = TRUE)) %>%
@@ -121,7 +123,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #' wprecinct <- add_precinct(allendale, ald_p)
 get_precinct <- function(df) {
   pfirst <- df %>%
-    filter(grepl("RUN DATE", text, perl = TRUE)) %>%
+    filter(grepl("(RUN DATE|ELECTION ID:)", text, perl = TRUE)) %>%
     distinct(text, .keep_all = TRUE)
 
   pfirst_range <- pfirst %>%
@@ -174,7 +176,7 @@ add_precinct <- function(votes, pkey) {
   # now remove the headers -- since we now have precinct.
   # once we have precinct and asterisk, rows are identifiable
   wprecinct <-  wprecinct %>%
-    filter(!grepl("RUN DATE.*ELECTION ID: [0-9+]", text)) %>%
+    filter(!grepl(".*ELECTION ID: [0-9+]", text)) %>%
     filter(!grepl("PRECINCT TOTALS", text)) %>%
     filter(!grepl("CANDIDATES RECEIVING A VOTE", text))
 
