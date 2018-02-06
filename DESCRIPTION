@@ -8,7 +8,7 @@ Maintainer: Shiro Kuriwaki <kuriwaki@g.harvard.edu>
 Description: A set of functions to read publically availabl ballot image data.
     Mainly built towards reading the South Carolina audit files from iVotronic 
     readers.
-Imports: 
+Depends: 
     tidyverse,
     noncensus,
     data.table,
