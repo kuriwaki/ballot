@@ -1,27 +1,39 @@
 #' Standardize race code
 #'
+#' @param vec Vector of unstandardized race names
 #'
 #' @export
+#'
 std_racecode <- function(vec) {
-  prs_regex <- "President( And |/)Vice President"
+  prs_regex <- "President.*"
+  pty_regex <- "Straight Party"
 
+  # One per state
   gov_regex <- "^Governor"
+  ltg_regex <- "^(Lieutenant|Lt) Governor"
   atg_regex <- "^Attorney General"
   sos_regex <- "Secretary of State"
   sad_regex <- "^Auditor"
-  cad_regex <- "County Auditor"
   adj_regex <- "^Adjutant General"
   str_regex <- "^State Treasurer"
-  ctr_regex <- "^County Treasurer"
-  cmp_regex <- "^Comptroller General"
-  ltg_regex <- "^(Lieutenant|Lt) Governor"
-  pty_regex <- "Straight Party"
-  cor_regex <- "Coroner"
-  ssi_regex <- "^State Superintendent"
-  wat_regex <- "Soil and Water.* Commission"
+  cmp_regex <- "^Comp(tr|rt)oller General"
+  ssi_regex <- "^State Superintendent.*"
+  agr_regex <- "^Commissioner of Agri"
 
-  sen_regex <- "U(\\.|\\s|)S\\.? Senat(e|or)$"
-  sn2_regex <- "U(\\.|\\s|)S\\.? Senat(e|or) \\(Unexpired Term\\)"
+  # One per County or one per several counties level
+  cad_regex <- "County Auditor"
+  ctr_regex <- "^County Treasurer"
+  cor_regex <- "Coroner"
+  shf_regex <- "^Sheriff"
+  clr_regex <- "[County ]?Clerk of Court"
+  jpr_regex <- "^Probate Judge"
+  ccc_regex <- "County Council Chair"
+
+
+  wat_regex <- "Soil and Water.*"
+
+  sen_regex <- "U\\.?\\s?S\\.? Senat(e|or)$"
+  sn2_regex <- "U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired Term\\)"
 
 
   inner <- function(input, regex_str, replacement, use_num = FALSE) {
@@ -34,49 +46,48 @@ std_racecode <- function(vec) {
   vec %>%
     inner(prs_regex, "PRS0000 President")  %>%
     inner(gov_regex, "GOV0000 Governor")  %>%
+    inner(ltg_regex, "LGV0000 Lieutenant Governor") %>%
+    inner(pty_regex, "PTY0000 Straight Party") %>%
     inner(sos_regex, "SOS0000 Secretary of State") %>%
     inner(sad_regex, "AUD0000 Auditor") %>%
-    inner(cad_regex, "CAUD000 County Auditor") %>%
     inner(atg_regex, "ATG0000 Attorney General") %>%
     inner(adj_regex, "ADJ0000 Adjutant General") %>%
     inner(str_regex, "STRES00 State Treasurer") %>%
-    inner(ctr_regex, "CTRES00 County Treasurer") %>%
     inner(cmp_regex, "CMP0000 Comptroller General") %>%
-    inner(ltg_regex, "LGV0000 Lieutenant Governor") %>%
-    inner(pty_regex, "PTY0000 Straight Party") %>%
-    inner(cor_regex, "COR0000 Coroner") %>%
     inner(ssi_regex, "SSI0000 State Superintendent of Education") %>%
-    inner(wat_regex, "WAT0000 Soil and Water District Commission") %>%
+    inner(agr_regex, "AGR0000 State Commissioner of Agriculture") %>%
+    inner(cad_regex, "CAUD000 County Auditor") %>%
+    inner(ctr_regex, "CTRES00 County Treasurer") %>%
+    inner(cor_regex, "COR0000 Coroner") %>%
+    inner(shf_regex, "SHF0000 Sheriff") %>%
+    inner(clr_regex, "CLR0000 Clerk of Court") %>%
+    inner(jpr_regex, "JPRB000 Probate Judge") %>%
+    inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
+    inner(sol_regex, "CCL0000 County Coucil Chair") %>%
+    inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
     inner(sen_regex, "USSEN01 US Senator") %>%
     inner(sn2_regex, "USSEN02 US Senator (Special)")
 }
 
-std_racecode(samp) %>% sample() %>% head(n = 20) %>% sort()
 
-df2 <- readRDS("~/Dropbox/local-representation/build/output/fmt_long/2012-11-06_formatted.Rds")
-samp <- sample_n(df2, 5000) %>% pull(race)
+#' Standardize race with district number
+#'
+#' @param vec a character vector that contains some solicitor district values
+#' @param is_solicitor a logical vector of the same length as \code{vec} that is
+#' \code{TRUE} when the index is a solicitor, and \code{FALSE} otherwise
+#'
+#' raw <- c("Solicitor Circuit District 14", "Solicitor 10th Circuit", "County Council")
+#' is_solicit <- c(TRUE, TRUE, FALSE)
+#' std_sc_solicit(raw, is_solicit)
 
+std_sc_solicit <- function(vec, is_solicit) {
+  stopifnot(length(vec) == length(is_solicit))
+  num <- str_pad(str_extract(vec, "\\d+"), width = "4", pad = "0")
 
-#' Standardize race name
-#'
-#' Make all sentence case, with exception of "U.S."
-#'
-#' @param df
-#'
-#' @export
-#'
-std_race <- function(df) {
-  df %>%
-    mutate(race = str_to_title(race),
-           race = gsub("U\\.s\\.", "U.S.", race),  # capitalize
-           race = gsub("U\\.\\sS\\.", "U.S.", race),  # remove space
-           race = gsub("U\\.S\\. Senator", "U.S. Senate", race), # Senate
-           race = gsub("Us Senate", "U.S. Senate", race),
-           race = gsub("Us Senator", "U.S. Senate", race),
-           race = gsub("President And Vice President", "President", race), # Unify
-           race = gsub("President/Vice President", "President", race),
-           race = gsub("Lt Governor", "Lieutenant Governor", race))
+  coded <- str_c("SOL", num, " ", vec)
+  coded[!is_solicit] <- NA
 
+  coded
 }
 
 
