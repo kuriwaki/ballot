@@ -9,9 +9,9 @@ Description: A set of functions to read publically availabl ballot image data.
     Mainly built towards reading the South Carolina audit files from iVotronic 
     readers.
 Depends: 
-    tidyverse,
+    tidyverse
+Imports: 
     noncensus,
-    data.table,
     glue,
     foreach
 Encoding: UTF-8
