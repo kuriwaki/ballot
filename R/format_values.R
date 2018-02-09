@@ -63,7 +63,6 @@ std_racecode <- function(vec) {
     inner(clr_regex, "CLR0000 Clerk of Court") %>%
     inner(jpr_regex, "JPRB000 Probate Judge") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
-    inner(sol_regex, "CCL0000 County Coucil Chair") %>%
     inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
     inner(sen_regex, "USSEN01 US Senator") %>%
     inner(sn2_regex, "USSEN02 US Senator (Special)")
@@ -79,6 +78,8 @@ std_racecode <- function(vec) {
 #' raw <- c("Solicitor Circuit District 14", "Solicitor 10th Circuit", "County Council")
 #' is_solicit <- c(TRUE, TRUE, FALSE)
 #' std_sc_solicit(raw, is_solicit)
+#'
+#' @export
 
 std_sc_solicit <- function(vec, is_solicit) {
   stopifnot(length(vec) == length(is_solicit))
