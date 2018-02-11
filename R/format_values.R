@@ -28,6 +28,8 @@ std_racecode <- function(vec) {
   clr_regex <- "[County ]?Clerk of Court"
   jpr_regex <- "^Probate Judge"
   ccc_regex <- "County Council Chair"
+  cal_regex <- "County Council At Large"
+  rgd_regex <- "Register of Deeds"
 
 
   wat_regex <- "Soil and Water.*"
@@ -63,6 +65,8 @@ std_racecode <- function(vec) {
     inner(clr_regex, "CLR0000 Clerk of Court") %>%
     inner(jpr_regex, "JPRB000 Probate Judge") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
+    inner(cal_regex, "CCL0000 County Coucil At Large") %>%
+    inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
     inner(sen_regex, "USSEN01 US Senator") %>%
     inner(sn2_regex, "USSEN02 US Senator (Special)")
