@@ -7,6 +7,7 @@
 std_racecode <- function(vec) {
   prs_regex <- "President.*"
   pty_regex <- "Straight Party"
+  none_regx <- ".*NO VOTES CAST.*"
 
   # One per state
   gov_regex <- "^Governor"
@@ -38,18 +39,16 @@ std_racecode <- function(vec) {
   sn2_regex <- "U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired Term\\)"
 
 
-  inner <- function(input, regex_str, replacement, use_num = FALSE) {
-    if (use_num) {
-    }
-
+  inner <- function(input, regex_str, replacement) {
     str_replace(input, regex(regex_str, ignore_case = TRUE), replacement)
   }
 
   vec %>%
     inner(prs_regex, "PRS0000 President")  %>%
+    inner(pty_regex, "PTY0000 Straight Party") %>%
+    inner(none_regx, "0000000 Absentee for all Offices") %>%
     inner(gov_regex, "GOV0000 Governor")  %>%
     inner(ltg_regex, "LGV0000 Lieutenant Governor") %>%
-    inner(pty_regex, "PTY0000 Straight Party") %>%
     inner(sos_regex, "SOS0000 Secretary of State") %>%
     inner(sad_regex, "AUD0000 Auditor") %>%
     inner(atg_regex, "ATG0000 Attorney General") %>%
@@ -65,7 +64,7 @@ std_racecode <- function(vec) {
     inner(clr_regex, "CLR0000 Clerk of Court") %>%
     inner(jpr_regex, "JPRB000 Probate Judge") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
-    inner(cal_regex, "CCL0000 County Coucil At Large") %>%
+    inner(cal_regex, "CCL0000 County Coucil at Large") %>%
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
     inner(sen_regex, "USSEN01 US Senator") %>%
