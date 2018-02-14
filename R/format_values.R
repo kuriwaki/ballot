@@ -19,7 +19,7 @@ std_racecode <- function(vec) {
   str_regex <- "^State Treasurer"
   cmp_regex <- "^Comp(tr|rt)oller General"
   ssi_regex <- "^State Superintendent.*"
-  agr_regex <- "^Commissioner of Agri"
+  agr_regex <- "^Commissioner of Agri.*"
 
   # One per County or one per several counties level
   cad_regex <- "County Auditor"
@@ -31,7 +31,10 @@ std_racecode <- function(vec) {
   ccc_regex <- "County Council Chair"
   cal_regex <- "County Council At Large"
   rgd_regex <- "Register of Deeds"
+  rmc_regex <- "Register of Mesne Convey(a|e)nce"
 
+
+  # multiple votes per person
 
   wat_regex <- "Soil and Water.*"
 
@@ -66,6 +69,7 @@ std_racecode <- function(vec) {
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
     inner(cal_regex, "CCL0000 County Coucil at Large") %>%
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
+    inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
     inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
     inner(sen_regex, "USSEN01 US Senator") %>%
     inner(sn2_regex, "USSEN02 US Senator (Special)")
@@ -94,6 +98,30 @@ std_sc_solicit <- function(vec, is_solicit) {
   coded
 }
 
+
+#' Standardize race with first letter after code
+#'
+#' @param vec a character vector that contains some values to be used in code
+#' @param use a logical vector of the same length as \code{vec} that is
+#' \code{TRUE} when the index is to be transformed, and \code{FALSE} otherwise
+#'
+#' raw <- c("CSB West Ashley", "CSB East Cooper", "County Council")
+#' use <- c(TRUE, TRUE, FALSE)
+#' std_sc_first(raw, use, "CSB ", "SCH")
+#'
+#' @export
+
+std_sc_first <- function(vec, use, code_regex, code_replace) {
+  stopifnot(length(vec) == length(use))
+  values <- str_replace(vec, code_regex, "")
+  key <- str_pad(str_sub(values, 1, 1), width = "4", pad = "0", side = "left")
+  print(key)
+
+  coded <- str_c(code_replace, key, " ", vec)
+  coded[!use] <- NA
+
+  coded
+}
 
 
 #' Standardize options in referendum race
