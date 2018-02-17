@@ -115,7 +115,6 @@ std_sc_first <- function(vec, use, code_regex, code_replace) {
   stopifnot(length(vec) == length(use))
   values <- str_replace(vec, code_regex, "")
   key <- str_pad(str_sub(values, 1, 1), width = "4", pad = "0", side = "left")
-  print(key)
 
   coded <- str_c(code_replace, key, " ", vec)
   coded[!use] <- NA
