@@ -1,10 +1,14 @@
-#' Standardize race code
+#' Standardize race variables to proper names with leading 7-character codes
 #'
 #' @param vec Vector of unstandardized race names
 #'
 #' @export
 #'
-std_racecode <- function(vec) {
+#' @examples
+#' vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator")
+#' std_race(vec)
+#'
+std_race <- function(vec) {
   prs_regex <- "President.*"
   pty_regex <- "Straight Party"
   none_regx <- ".*NO VOTES CAST.*"
@@ -38,6 +42,14 @@ std_racecode <- function(vec) {
 
   wat_regex <- "Soil and Water.*"
 
+  # Federal
+  h01_regex <- "CON(G|0)001.*"
+  h02_regex <- "CON(G|0)002.*"
+  h03_regex <- "CON(G|0)003.*"
+  h04_regex <- "CON(G|0)004.*"
+  h05_regex <- "CON(G|0)005.*"
+  h06_regex <- "CON(G|0)006.*"
+  h07_regex <- "CON(G|0)007.*"
   sen_regex <- "^U\\.?\\s?S\\.? Senat(e|or)$"
   sn2_regex <- "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired Term\\)"
 
@@ -49,7 +61,7 @@ std_racecode <- function(vec) {
   vec %>%
     inner(prs_regex, "PRS0000 President")  %>%
     inner(pty_regex, "PTY0000 Straight Party") %>%
-    inner(none_regx, "0000000 Absentee for all Offices") %>%
+    inner(none_regx, "A000000 Absentee for all Offices") %>%
     inner(gov_regex, "GOV0000 Governor")  %>%
     inner(ltg_regex, "LGV0000 Lieutenant Governor") %>%
     inner(sos_regex, "SOS0000 Secretary of State") %>%
@@ -71,9 +83,17 @@ std_racecode <- function(vec) {
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
     inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
+    inner(h01_regex, "USHOU01 US House District 1") %>%
+    inner(h02_regex, "USHOU02 US House District 2") %>%
+    inner(h03_regex, "USHOU03 US House District 3") %>%
+    inner(h04_regex, "USHOU04 US House District 4") %>%
+    inner(h05_regex, "USHOU05 US House District 5") %>%
+    inner(h06_regex, "USHOU06 US House District 6") %>%
+    inner(h07_regex, "USHOU07 US House District 7") %>%
     inner(sen_regex, "USSEN01 US Senator") %>%
     inner(sn2_regex, "USSEN02 US Senator (Special)")
 }
+
 
 
 #' Standardize race with district number
@@ -126,13 +146,13 @@ std_sc_first <- function(vec, use, code_regex, code_replace) {
 #' Standardize options in referendum race
 #'
 #'
-#' @param df
+#' @param vec Vector of candidate / vote options
 #'
 #' @export
 #'
-std_ref_option <- function(df) {
-
-  df %>%
-    mutate(cand_name = replace(cand_name, grepl("In Favor", cand_name), "Yes"),
-           cand_name = replace(cand_name, grepl("Opposed To The Question" , cand_name), "No"))
+std_ref_option <- function(vec) {
+  vec %>%
+    replace(grepl("In Favor", ., ignore.case = TRUE), "Yes") %>%
+    replace(grepl("Opposed", ., ignore.case = TRUE), "No")
 }
+

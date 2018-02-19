@@ -4,10 +4,10 @@
 \alias{std_ref_option}
 \title{Standardize options in referendum race}
 \usage{
-std_ref_option(df)
+std_ref_option(vec)
 }
 \arguments{
-\item{df}{}
+\item{vec}{Vector of candidate / vote options}
 }
 \description{
 Standardize options in referendum race
