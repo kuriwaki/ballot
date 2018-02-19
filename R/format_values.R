@@ -26,7 +26,7 @@ std_racecode <- function(vec) {
   ctr_regex <- "^County Treasurer"
   cor_regex <- "Coroner"
   shf_regex <- "^Sheriff"
-  clr_regex <- "[County ]?Clerk of Court"
+  clr_regex <- "(County )?Clerk of Court"
   jpr_regex <- "^Probate Judge"
   ccc_regex <- "County Council Chair"
   cal_regex <- "County Council At Large"
@@ -38,8 +38,8 @@ std_racecode <- function(vec) {
 
   wat_regex <- "Soil and Water.*"
 
-  sen_regex <- "U\\.?\\s?S\\.? Senat(e|or)$"
-  sn2_regex <- "U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired Term\\)"
+  sen_regex <- "^U\\.?\\s?S\\.? Senat(e|or)$"
+  sn2_regex <- "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired Term\\)"
 
 
   inner <- function(input, regex_str, replacement) {
