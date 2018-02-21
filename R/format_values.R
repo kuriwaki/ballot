@@ -5,7 +5,7 @@
 #' @export
 #'
 #' @examples
-#' vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator")
+#' vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator", "CCNL001 Council 1", "CCD0001 Council 1")
 #' std_race(vec)
 #'
 std_race <- function(vec) {
@@ -36,6 +36,8 @@ std_race <- function(vec) {
   cal_regex <- "County Council At Large"
   rgd_regex <- "Register of Deeds"
   rmc_regex <- "Register of Mesne Convey(a|e)nce"
+  ccl1_regx <- "^CCNL" # standardize CCNL to CCL
+  ccl2_regx <- "^CCD" # standardize CCD to CCL
 
 
   # multiple votes per person
@@ -78,18 +80,20 @@ std_race <- function(vec) {
     inner(shf_regex, "SHF0000 Sheriff") %>%
     inner(clr_regex, "CLR0000 Clerk of Court") %>%
     inner(jpr_regex, "JPRB000 Probate Judge") %>%
+    inner(ccl1_regx, "CCL0") %>%
+    inner(ccl2_regx, "CCL") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
     inner(cal_regex, "CCL0000 County Coucil at Large") %>%
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
     inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
-    inner(h01_regex, "USHOU01 US House District 1") %>%
-    inner(h02_regex, "USHOU02 US House District 2") %>%
-    inner(h03_regex, "USHOU03 US House District 3") %>%
-    inner(h04_regex, "USHOU04 US House District 4") %>%
-    inner(h05_regex, "USHOU05 US House District 5") %>%
-    inner(h06_regex, "USHOU06 US House District 6") %>%
-    inner(h07_regex, "USHOU07 US House District 7") %>%
+    inner(h01_regex, "USHOU01 US House SC-01") %>%
+    inner(h02_regex, "USHOU02 US House SC-02") %>%
+    inner(h03_regex, "USHOU03 US House SC-03") %>%
+    inner(h04_regex, "USHOU04 US House SC-04") %>%
+    inner(h05_regex, "USHOU05 US House SC-05") %>%
+    inner(h06_regex, "USHOU06 US House SC-06") %>%
+    inner(h07_regex, "USHOU07 US House SC-07") %>%
     inner(sen_regex, "USSEN01 US Senator") %>%
     inner(sn2_regex, "USSEN02 US Senator (Special)")
 }

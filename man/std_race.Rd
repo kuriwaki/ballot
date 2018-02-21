@@ -13,7 +13,7 @@ std_race(vec)
 Standardize race variables to proper names with leading 7-character codes
 }
 \examples{
-vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator")
+vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator", "CCNL001 Council 1", "CCD0001 Council 1")
 std_race(vec)
 
 }
