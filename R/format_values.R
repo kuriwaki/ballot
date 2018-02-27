@@ -36,8 +36,10 @@ std_race <- function(vec) {
   cal_regex <- "County Council At Large"
   rgd_regex <- "Register of Deeds"
   rmc_regex <- "Register of Mesne Convey(a|e)nce"
-  ccl1_regx <- "^CCNL" # standardize CCNL to CCL
+  ccl1_regx <- "^C(CN|NC)L" # standardize CCNL to CCL
   ccl2_regx <- "^CCD" # standardize CCD to CCL
+
+  hou_regex <- "^HOUS" # standardize HOUS to HOU0
 
 
   # multiple votes per person
@@ -84,6 +86,7 @@ std_race <- function(vec) {
     inner(ccl2_regx, "CCL") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
     inner(cal_regex, "CCL0000 County Coucil at Large") %>%
+    inner(hou_regex, "HOU0") %>%
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
     inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
