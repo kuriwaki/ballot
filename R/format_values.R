@@ -103,23 +103,31 @@ std_race <- function(vec) {
 
 
 
-#' Standardize race with district number
+#' Standardize solicitor race with district number, based on county
 #'
 #' @param vec a character vector that contains some solicitor district values
 #' @param is_solicitor a logical vector of the same length as \code{vec} that is
 #' \code{TRUE} when the index is a solicitor, and \code{FALSE} otherwise
+#' @param county A vector of strings, south carolina counties.
+#' @param data A data that matches counties to solicitor district keys. Provided in package.
 #'
+#'@examples
 #' raw <- c("Solicitor Circuit District 14", "Solicitor 10th Circuit", "County Council")
 #' is_solicit <- c(TRUE, TRUE, FALSE)
-#' std_sc_solicit(raw, is_solicit)
+#' county <- c("Anderson", "Jasper", "Charleston")
+#' std_sc_solicit(raw, is_solicit, county)
 #'
 #' @export
 
-std_sc_solicit <- function(vec, is_solicit) {
-  stopifnot(length(vec) == length(is_solicit))
-  num <- str_pad(str_extract(vec, "\\d+"), width = "4", pad = "0")
+std_sc_solicit <- function(vec, is_solicit, county, data = sc_counties) {
+  stopifnot(length(vec) == length(is_solicit) & length(vec) == length(county))
 
-  coded <- str_c("SOL", num, " ", vec)
+  county_tbl <- tibble(county = county, race = vec)
+
+  coded <- left_join(county_tbl,  select(sc_counties, county, sol_race_code), by = "county") %>%
+    mutate(race_code = str_c(sol_race_code, vec, sep = " ")) %>%
+    pull(race_code)
+
   coded[!is_solicit] <- NA
 
   coded

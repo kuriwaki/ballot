@@ -4,18 +4,25 @@
 \alias{std_sc_solicit}
 \title{Standardize race with district number}
 \usage{
-std_sc_solicit(vec, is_solicit)
+std_sc_solicit(vec, is_solicit, county, data = sc_counties)
 }
 \arguments{
 \item{vec}{a character vector that contains some solicitor district values}
 
-\item{is_solicitor}{a logical vector of the same length as \code{vec} that is
-\code{TRUE} when the index is a solicitor, and \code{FALSE} otherwise
+\item{county}{A vector of strings, south carolina counties.}
 
-raw <- c("Solicitor Circuit District 14", "Solicitor 10th Circuit", "County Council")
-is_solicit <- c(TRUE, TRUE, FALSE)
-std_sc_solicit(raw, is_solicit)}
+\item{data}{A data that matches counties to solicitor district keys. Provided in package.}
+
+\item{is_solicitor}{a logical vector of the same length as \code{vec} that is
+\code{TRUE} when the index is a solicitor, and \code{FALSE} otherwise}
 }
 \description{
 Standardize race with district number
+}
+\examples{
+raw <- c("Solicitor Circuit District 14", "Solicitor 10th Circuit", "County Council")
+is_solicit <- c(TRUE, TRUE, FALSE)
+county <- c("Anderson", "Jasper", "Charleston")
+std_sc_solicit(raw, is_solicit, county)
+
 }
