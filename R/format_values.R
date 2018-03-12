@@ -37,16 +37,17 @@ std_race <- function(vec) {
   rmc_regex <- "Register of Mesne Convey(a|e)nce"
 
   cal_regex <- "County Council At( |-)Large"
-  ccl3_regx <- "^C(CD|C0|NC|OCL)" # standardize CCD/CC0... three character  to CCL
-  ccl4_regx <- "^C((CN|NC)L|OC|YCL)" # standardize CCNL to CCL, and CC001 to CCL0
-  ccl5_regx <- "CTYCN"  # change to CCL00
-  ccl6_regx <- "CCLIST" # change to CCL000
+  ccl3_regx <- "^C(CD|C0|NC(?=0)|OC(?=000))" # standardize CCD/CC0... three character  to CCL
+  ccl4_regx <- "^C(CNL|NCL|OCL|OC(?=00[1-9])|YCL)" # standardize CCNL to CCL, and CC001 to CCL0
+  ccl5_regx <- "(^CTYCN|^CCSCH(?=[0-9]+\\sCounty))"  # change to CCL00
+  ccl6_regx <- "^CCLIST" # change to CCL000
 
-  hou_regex <- "^HOU(S|(?=0[4-7]))" # standardize HOUS to HOU0, standardize HOU078 (6 chars) to HOU0078
-  ssn_regex <- "SEN(?=0[2-4])" # SEN028 to SEN0028
+  hou_regex <- "^HOU(S|(?=0[0-9][0-9]\\s))" # standardize HOUS to HOU0, standardize HOU078 (6 chars) to HOU0078
+  ssn_regex <- "SEN(?=0[0-9][0-9]\\s)" # SEN028 to SEN0028
 
   # potentially many per county
-  sch_regex <- "^(BOE|SB)"
+  sch3_regx <- "(^BOE|^SB(?=000[3-7]\\s)|^SB0(?=0[0-9][0-9][0-9]\\s))"
+  sch4_regx <- "^SB0(?=00[0-9][0-9]\\s)"
   scb_regex <- "Board of Education Chair"
   sca_regex <- "School Board Trustee" # McCormick is at-large, elects four
 
@@ -95,7 +96,8 @@ std_race <- function(vec) {
     inner(ccl6_regx, "CCL000") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
     inner(cal_regex, "CCL0000 County Coucil at Large") %>%
-    inner(sch_regex, "SCH") %>%
+    inner(sch3_regx, "SCH") %>%
+    inner(sch4_regx, "SCH0") %>%
     inner(scb_regex, "SCH0000 School Board Chair") %>%
     inner(sca_regex, "SCH0000 School Board Trustee (At-Large)") %>%
     inner(hou_regex, "HOU0") %>%
