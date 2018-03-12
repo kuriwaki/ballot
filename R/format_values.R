@@ -30,7 +30,7 @@ std_race <- function(vec) {
   ctr_regex <- "^County Treasurer"
   cor_regex <- "Coroner"
   shf_regex <- "^Sheriff"
-  clr_regex <- "(County )?Clerk of Court"
+  clr_regex <- "(County )?Clerk of Cour(t|)"
   jpr_regex <- "^Probate Judge"
   ccc_regex <- "County Council Chair"
   cal_regex <- "County Council At Large"
@@ -41,19 +41,20 @@ std_race <- function(vec) {
 
   hou_regex <- "^HOUS" # standardize HOUS to HOU0
 
+  # potentially many per county
 
   # multiple votes per person
 
   wat_regex <- "Soil and Water.*"
 
   # Federal
-  h01_regex <- "CON(G|0)001.*"
-  h02_regex <- "CON(G|0)002.*"
-  h03_regex <- "CON(G|0)003.*"
-  h04_regex <- "CON(G|0)004.*"
-  h05_regex <- "CON(G|0)005.*"
-  h06_regex <- "CON(G|0)006.*"
-  h07_regex <- "CON(G|0)007.*"
+  h01_regex <- "CON(G|0|)001.*"
+  h02_regex <- "CON(G|0|)002.*"
+  h03_regex <- "CON(G|0|)003.*"
+  h04_regex <- "CON(G|0|)004.*"
+  h05_regex <- "CON(G|0|)005.*"
+  h06_regex <- "CON(G|0|)006.*"
+  h07_regex <- "CON(G|0|)007.*"
   sen_regex <- "^U\\.?\\s?S\\.? Senat(e|or)$"
   sn2_regex <- "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired Term\\)"
 
