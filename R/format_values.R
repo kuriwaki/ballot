@@ -33,18 +33,24 @@ std_race <- function(vec) {
   clr_regex <- "(County )?Clerk of Cour(t|)"
   jpr_regex <- "^Probate Judge"
   ccc_regex <- "County Council Chair"
-  cal_regex <- "County Council At Large"
   rgd_regex <- "Register of Deeds"
   rmc_regex <- "Register of Mesne Convey(a|e)nce"
-  ccl1_regx <- "^C(CN|NC)L" # standardize CCNL to CCL
-  ccl2_regx <- "^CCD" # standardize CCD to CCL
 
-  hou_regex <- "^HOUS" # standardize HOUS to HOU0
+  cal_regex <- "County Council At( |-)Large"
+  ccl3_regx <- "^C(CD|C0|NC|OCL)" # standardize CCD/CC0... three character  to CCL
+  ccl4_regx <- "^C((CN|NC)L|OC|YCL)" # standardize CCNL to CCL, and CC001 to CCL0
+  ccl5_regx <- "CTYCN"  # change to CCL00
+  ccl6_regx <- "CCLIST" # change to CCL000
+
+  hou_regex <- "^HOU(S|(?=0[4-7]))" # standardize HOUS to HOU0, standardize HOU078 (6 chars) to HOU0078
+  ssn_regex <- "SEN(?=0[2-4])" # SEN028 to SEN0028
 
   # potentially many per county
+  sch_regex <- "^(BOE|SB)"
+  scb_regex <- "Board of Education Chair"
+  sca_regex <- "School Board Trustee" # McCormick is at-large, elects four
 
   # multiple votes per person
-
   wat_regex <- "Soil and Water.*"
 
   # Federal
@@ -83,11 +89,17 @@ std_race <- function(vec) {
     inner(shf_regex, "SHF0000 Sheriff") %>%
     inner(clr_regex, "CLR0000 Clerk of Court") %>%
     inner(jpr_regex, "JPRB000 Probate Judge") %>%
-    inner(ccl1_regx, "CCL0") %>%
-    inner(ccl2_regx, "CCL") %>%
+    inner(ccl3_regx, "CCL") %>%
+    inner(ccl4_regx, "CCL0") %>%
+    inner(ccl5_regx, "CCL00") %>%
+    inner(ccl6_regx, "CCL000") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
     inner(cal_regex, "CCL0000 County Coucil at Large") %>%
+    inner(sch_regex, "SCH") %>%
+    inner(scb_regex, "SCH0000 School Board Chair") %>%
+    inner(sca_regex, "SCH0000 School Board Trustee (At-Large)") %>%
     inner(hou_regex, "HOU0") %>%
+    inner(ssn_regex, "SEN0") %>%
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
     inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%

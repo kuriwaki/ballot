@@ -146,7 +146,7 @@ get_precinct <- function(df) {
 #' Add precinct to each row of vote dataset, and remove other headers
 #'
 #' Use the non-equi join in data.table to identify precinct. row i is in
-#' precinct j if i's ID is in between p_Start_id and p_end_id of precint j.
+#' precinct j if i's ID is in between p_start_id and p_end_id of precint j.
 #'
 #' @param votes EL155 dataset of votes, product of read_EL155()
 #' @param pkey precinct key, product of get_precinct_range()
