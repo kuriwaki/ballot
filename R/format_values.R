@@ -15,7 +15,7 @@ std_race <- function(vec) {
 
   # One per state
   gov_regex <- "^Governor"
-  ltg_regex <- "^(Lieutenant|Lt) Governor"
+  ltg_regex <- "^(Lieutenant|Lt)\\s+Governor"
   atg_regex <- "^Attorney General"
   sos_regex <- "Secretary of State"
   sad_regex <- "^Auditor"
@@ -42,6 +42,8 @@ std_race <- function(vec) {
   ccl5_regx <- "(^CTYCN|^CCSCH(?=[0-9]+\\sCounty))"  # change to CCL00
   ccl6_regx <- "^CCLIST" # change to CCL000
 
+  ccs_regex <- "County Supervisor"
+
   hou_regex <- "^HOU(S|(?=0[0-9][0-9]\\s))" # standardize HOUS to HOU0, standardize HOU078 (6 chars) to HOU0078
   ssn_regex <- "SEN(?=0[0-9][0-9]\\s)" # SEN028 to SEN0028
 
@@ -52,7 +54,7 @@ std_race <- function(vec) {
   sca_regex <- "School Board Trustee" # McCormick is at-large, elects four
 
   # multiple votes per person
-  wat_regex <- "Soil and Water.*"
+  wat_regex <- "(^WAT00|^WSD00|^WSH00|^WTR00|^WS000|^WATWR)"
 
   # Federal
   h01_regex <- "CON(G|0|)001.*"
@@ -63,7 +65,7 @@ std_race <- function(vec) {
   h06_regex <- "CON(G|0|)006.*"
   h07_regex <- "CON(G|0|)007.*"
   sen_regex <- "^U\\.?\\s?S\\.? Senat(e|or)$"
-  sn2_regex <- "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired Term\\)"
+  sn2_regex <- "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired? Term\\)"
 
 
   inner <- function(input, regex_str, replacement) {
@@ -96,6 +98,7 @@ std_race <- function(vec) {
     inner(ccl6_regx, "CCL000") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
     inner(cal_regex, "CCL0000 County Coucil at Large") %>%
+    inner(ccs_regex, "CCS County Supervisor") %>%
     inner(sch3_regx, "SCH") %>%
     inner(sch4_regx, "SCH0") %>%
     inner(scb_regex, "SCH0000 School Board Chair") %>%
@@ -104,7 +107,7 @@ std_race <- function(vec) {
     inner(ssn_regex, "SEN0") %>%
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
-    inner(wat_regex, "WAT0000 Soil and Water District Commissioner") %>%
+    inner(wat_regex, "WAT00") %>%
     inner(h01_regex, "USHOU01 US House SC-01") %>%
     inner(h02_regex, "USHOU02 US House SC-02") %>%
     inner(h03_regex, "USHOU03 US House SC-03") %>%
@@ -180,9 +183,11 @@ std_sc_first <- function(vec, use, code_regex, code_replace) {
 #'
 #' @export
 #'
+#' @examples
+#' std_ref_option(c("No", "Opposed to Question", "Opposed", "W/I ANY OPPOSED"))
+#'
 std_ref_option <- function(vec) {
   vec %>%
-    replace(grepl("In Favor", ., ignore.case = TRUE), "Yes") %>%
-    replace(grepl("Opposed", ., ignore.case = TRUE), "No")
+    str_replace(regex("(?<!^W/I).*In Favor.*", ignore_case = TRUE), "Yes") %>%
+    str_replace(regex("(?<!^W/I).*Opposed.*", ignore_case = TRUE), "No")
 }
-
