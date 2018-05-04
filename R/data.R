@@ -8,4 +8,16 @@
 #'   \item{sol_race_code}{weight of the diamond, in carats}
 #'   ...
 #' }
+#'
+#' @usage data(sc_counties)
 "sc_counties"
+
+
+#' Sample EL155
+#'
+#' Dillon County, SC EL155 file from the 2016 General Election read in by \env{read_EL155}.
+#'
+#' @docType data
+#' @source South Carolina Election Commission
+#' @usage data(G2016_Dillon_EL155)
+"G2016_Dillon_EL155"
