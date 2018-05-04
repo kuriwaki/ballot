@@ -10,7 +10,7 @@
   ...
 }}
 \usage{
-sc_counties
+data(sc_counties)
 }
 \description{
 Some district information at the county level

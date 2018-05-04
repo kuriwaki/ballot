@@ -12,3 +12,7 @@ std_ref_option(vec)
 \description{
 Standardize options in referendum race
 }
+\examples{
+std_ref_option(c("No", "Opposed to Question", "Opposed", "W/I ANY OPPOSED"))
+
+}
