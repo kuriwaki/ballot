@@ -56,7 +56,7 @@ std_race <- function(vec) {
 
   # multiple votes per person
   wat_regex <- "(^WAT00|^WSD00|^WSH00|^WTR00|^WS000|^WATWR)"
-  sow_regex <- "Soil (and|\&) Water.*"
+  sow_regex <- "Soil (and|&) Water.*"
 
   # Federal
   h01_regex <- "CON(G|0|)001.*"
