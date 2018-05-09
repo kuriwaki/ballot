@@ -43,18 +43,20 @@ std_race <- function(vec) {
   ccl6_regx <- "^CCLIST" # change to CCL000
 
   ccs_regex <- "County Supervisor"
+  ccm_regex <- "County Manager"
 
   hou_regex <- "^HOU(S|(?=0[0-9][0-9]\\s))" # standardize HOUS to HOU0, standardize HOU078 (6 chars) to HOU0078
   ssn_regex <- "SEN(?=0[0-9][0-9]\\s)" # SEN028 to SEN0028
 
   # potentially many per county
-  sch3_regx <- "(^BOE|^SB(?=000[3-7]\\s)|^SB0(?=0[0-9][0-9][0-9]\\s))"
-  sch4_regx <- "^SB0(?=00[0-9][0-9]\\s)"
-  scb_regex <- "Board of Education Chair"
-  sca_regex <- "School Board Trustee" # McCormick is at-large, elects four
+  sch3_regx <- "(^BOE|^SB(?=000[1-7]\\s)|^SB0(?=0[0-9][0-9][0-9]\\s))" # SB0001 to SCH0001
+  sch4_regx <- "^SB0(?=00[0-9][0-9]\\s)" # SCB0001 to SCH0001
+  scb_regex <- "(Board of Education Chair|School Board Chairman)"
+  sca_regex <- "(School Board Trustee|School Board At Large)" # McCormick is at-large, elects four
 
   # multiple votes per person
   wat_regex <- "(^WAT00|^WSD00|^WSH00|^WTR00|^WS000|^WATWR)"
+  sow_regex <- "Soil (and|\&) Water.*"
 
   # Federal
   h01_regex <- "CON(G|0|)001.*"
@@ -98,16 +100,18 @@ std_race <- function(vec) {
     inner(ccl6_regx, "CCL000") %>%
     inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
     inner(cal_regex, "CCL0000 County Coucil at Large") %>%
-    inner(ccs_regex, "CCS County Supervisor") %>%
+    inner(ccs_regex, "CCS0000 County Supervisor") %>%
+    inner(ccm_regex, "CCM0000 County Manager") %>%
     inner(sch3_regx, "SCH") %>%
     inner(sch4_regx, "SCH0") %>%
     inner(scb_regex, "SCH0000 School Board Chair") %>%
-    inner(sca_regex, "SCH0000 School Board Trustee (At-Large)") %>%
+    inner(sca_regex, "SCH0000 School Board At-Large") %>%
     inner(hou_regex, "HOU0") %>%
     inner(ssn_regex, "SEN0") %>%
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
     inner(wat_regex, "WAT00") %>%
+    inner(sow_regex, "SOW0000 Soil and Water Commissioner") %>%
     inner(h01_regex, "USHOU01 US House SC-01") %>%
     inner(h02_regex, "USHOU02 US House SC-02") %>%
     inner(h03_regex, "USHOU03 US House SC-03") %>%
