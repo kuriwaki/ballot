@@ -80,7 +80,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 
   # extract info before dropping metadata
   eID <- valid %>%
-    filter(grepl("(RUN DATE|ELECTION ID:)", text)) %>%
+    filter(str_detect(text, "(RUN DATE|ELECTION ID:)")) %>%
     distinct(text) %>%
     mutate(election_ID = gsub(".*ID: ([0-9A-Z]+)$", "\\1", text)) %>%
     distinct(election_ID) %>%
@@ -93,12 +93,14 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
   df <- nonempty %>%
     filter(!grepl("^[\\s\\d]+$", text, perl = TRUE)) %>%
     filter(!grepl("REPORT-EL155\\s+PAGE\\s+[0-9+]", text, perl = TRUE)) %>% # Dorchester
-    filter(!grepl("^\\s+General Election\\s+[0-9+]", text)) %>% # in Marlbolo, precinct footer
-    filter(!grepl("^\\s+[A-z]+\\sCounty\\s*$", text)) %>% # Fairfield and Jasper County
-    filter(!grepl("^\\s+test\\s*$", text)) %>% # Beaufort footer
-    filter(!grepl("^\\s+Official", text)) %>% # Lexington 2016 footer
-    filter(!grepl("CAND VOTES", text)) %>%
-    filter(!grepl("PRECINCT TOTALS", text))
+    filter(!str_detect(text, "^\\s+General Election\\s+")) %>% # in Marlbolo, precinct footer
+    filter(!str_detect(text, "^\\s+[A-z]+\\sCounty\\s*$")) %>% # Fairfield and Jasper County
+    filter(!str_detect(text, "^\\s+test\\s*$")) %>% # Beaufort footer
+    filter(!str_detect(text, "^\\s+Official")) %>% # Lexington 2016 footer
+    filter(!str_detect(text, "^\\s+[A-z]+\\sCounty.*Results$")) %>% # Charleston header
+    filter(!str_detect(text, "^\\s+November [0-9], 201[0-9]")) %>% # 2014 header
+    filter(!str_detect(text, "CAND VOTES")) %>%
+    filter(!str_detect(text, "PRECINCT TOTALS"))
 
   df
 }
