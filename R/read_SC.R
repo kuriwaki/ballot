@@ -50,10 +50,6 @@ read_format_EL155 <- function(paths) {
 #' @param path path to raw file
 #' @param cname county name
 #'
-#' @import readr
-#' @import dplyr
-#' @import glue
-#'
 #' @export
 #'
 #' @examples
@@ -88,7 +84,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 
 
   n_precincts <- nonempty %>% filter(grepl("CAND VOTES", text)) %>% nrow()
-  cat(glue("{cname} (code {eID}) with {n_precincts} precincts, "), "\n")
+  cat(glue::glue("{cname} (code {eID}) with {n_precincts} precincts, "), "\n")
 
   df <- nonempty %>%
     filter(!grepl("^[\\s\\d]+$", text, perl = TRUE)) %>%
@@ -153,7 +149,6 @@ get_precinct <- function(df) {
 #' @param votes EL155 dataset of votes, product of read_EL155()
 #' @param pkey precinct key, product of get_precinct_range()
 #'
-#' @import data.table
 #' @export
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
@@ -162,7 +157,7 @@ get_precinct <- function(df) {
 add_precinct <- function(votes, pkey) {
 
   # do a join-by-range with data.table
-  require(data.table)
+  library(data.table)
   setDT(votes)
   setDT(pkey)
 
