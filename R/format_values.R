@@ -199,3 +199,20 @@ std_ref_option <- function(vec) {
 }
 
 
+#' Basic standardizations
+#'
+#' Removes a special character, change to ascii for standardization, remove periods at the end of names
+#'
+#' @param tbl A table with the column "cand_name"
+#'
+#' @export
+#'
+cand_to_ascii <- function(tbl) {
+  tbl %>%
+    mutate(cand_name = str_replace(cand_name, "�", ""),
+           cand_name = iconv(cand_name, to = "ASCII", sub = ""),
+           cand_name = str_replace(cand_name, "\\.$", ""))
+}
+
+
+
