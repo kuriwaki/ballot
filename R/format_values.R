@@ -59,13 +59,15 @@ std_race <- function(vec) {
   sow_regex <- "Soil (and|&) Water.*"
 
   # Federal
-  h01_regex <- "CON(G|0|)001.*"
-  h02_regex <- "CON(G|0|)002.*"
-  h03_regex <- "CON(G|0|)003.*"
-  h04_regex <- "CON(G|0|)004.*"
-  h05_regex <- "CON(G|0|)005.*"
-  h06_regex <- "CON(G|0|)006.*"
-  h07_regex <- "CON(G|0|)007.*"
+  ushou_ptrn1 <- "CON(G|0|)00"
+  ushou_ptrn2 <- "U\\.?S\\.?\\sHouse of Rep(\\.|resentatives)\\s+Dist(|rict)\\s+" # one way a small minority show it
+  h01_regex <- glue("({ushou_ptrn1}1.*|{ushou_ptrn2}1)")
+  h02_regex <- glue("({ushou_ptrn1}2.*|{ushou_ptrn2}2)")
+  h03_regex <- glue("({ushou_ptrn1}3.*|{ushou_ptrn2}3)")
+  h04_regex <- glue("({ushou_ptrn1}4.*|{ushou_ptrn2}4)")
+  h05_regex <- glue("({ushou_ptrn1}5.*|{ushou_ptrn2}5)")
+  h06_regex <- glue("({ushou_ptrn1}6.*|{ushou_ptrn2}6)")
+  h07_regex <- glue("({ushou_ptrn1}7.*|{ushou_ptrn2}7)")
   sen_regex <- "^U\\.?\\s?S\\.? Senat(e|or)$"
   sn2_regex <- "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired? Term\\)"
 
@@ -195,3 +197,5 @@ std_ref_option <- function(vec) {
     str_replace(regex("(?<!^W/I).*In Favor.*", ignore_case = TRUE), "Yes") %>%
     str_replace(regex("(?<!^W/I).*Opposed.*", ignore_case = TRUE), "No")
 }
+
+
