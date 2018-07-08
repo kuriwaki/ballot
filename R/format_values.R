@@ -60,7 +60,7 @@ std_race <- function(vec) {
 
   # Federal
   ushou_ptrn1 <- "CON(G|0|)00"
-  ushou_ptrn2 <- "U\\.?S\\.?\\sHouse of Rep(\\.|resentatives)\\s+Dist(|rict)\\s+" # one way a small minority show it
+  ushou_ptrn2 <- "U\\.?S\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dist(|rict)\\s+" # one way a small minority show it
   h01_regex <- glue("({ushou_ptrn1}1.*|{ushou_ptrn2}1)")
   h02_regex <- glue("({ushou_ptrn1}2.*|{ushou_ptrn2}2)")
   h03_regex <- glue("({ushou_ptrn1}3.*|{ushou_ptrn2}3)")
