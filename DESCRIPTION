@@ -9,7 +9,11 @@ Description: A set of functions to read publically available ballot image data.
     Mainly built towards reading the South Carolina audit files from iVotronic 
     readers.
 Depends: 
-    tidyverse,
+    dplyr,
+    purrr,
+    readr,
+    stringr,
+    forcats,
     glue,
     noncensus
 Imports: 
