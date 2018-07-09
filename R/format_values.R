@@ -47,10 +47,12 @@ std_race <- function(vec) {
 
   hou_regex <- "^HOU(S|(?=0[0-9][0-9]\\s))" # standardize HOUS to HOU0, standardize HOU078 (6 chars) to HOU0078
   ssn_regex <- "SEN(?=0[0-9][0-9]\\s)" # SEN028 to SEN0028
+  ssn2_regx <- "State Senate Dist(|rict)\\s(?=[0-9][0-9])" # SEN028 to SEN0028
 
   # potentially many per county
   sch3_regx <- "(^BOE|^SB(?=000[1-7]\\s)|^SB0(?=0[0-9][0-9][0-9]\\s))" # SB0001 to SCH0001
   sch4_regx <- "^SB0(?=00[0-9][0-9]\\s)" # SCB0001 to SCH0001
+  sch5_regx <- "^SCH(|O)(?=0[0-9]\\s)" # SCH02 to SCH0002; SCHO02 to SCH0002
   scb_regex <- "(Board of Education Chair|School Board Chairman)"
   sca_regex <- "(School Board Trustee|School Board At Large)" # McCormick is at-large, elects four
 
@@ -58,17 +60,19 @@ std_race <- function(vec) {
   wat_regex <- "(^WAT00|^WSD00|^WSH00|^WTR00|^WS000|^WATWR)"
   sow_regex <- "Soil (and|&) Water.*"
 
-  # Federal
-  ushou_ptrn1 <- "CON(G|0|)00"
+  # Congress
+  ushou_ptrn1 <- "CON(G|G0|00|0)0"
   ushou_ptrn2 <- "U\\.?S\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dist(|rict)\\s+" # one way a small minority show it
-  h01_regex <- glue("({ushou_ptrn1}1.*|{ushou_ptrn2}1)")
-  h02_regex <- glue("({ushou_ptrn1}2.*|{ushou_ptrn2}2)")
-  h03_regex <- glue("({ushou_ptrn1}3.*|{ushou_ptrn2}3)")
-  h04_regex <- glue("({ushou_ptrn1}4.*|{ushou_ptrn2}4)")
-  h05_regex <- glue("({ushou_ptrn1}5.*|{ushou_ptrn2}5)")
-  h06_regex <- glue("({ushou_ptrn1}6.*|{ushou_ptrn2}6)")
-  h07_regex <- glue("({ushou_ptrn1}7.*|{ushou_ptrn2}7)")
-  sen_regex <- "^U\\.?\\s?S\\.? Senat(e|or)$"
+  h01_regex <- suppressWarnings(glue("({ushou_ptrn1}1.*|{ushou_ptrn2}1)"))
+  h02_regex <- suppressWarnings(glue("({ushou_ptrn1}2.*|{ushou_ptrn2}2)"))
+  h03_regex <- suppressWarnings(glue("({ushou_ptrn1}3.*|{ushou_ptrn2}3)"))
+  h04_regex <- suppressWarnings(glue("({ushou_ptrn1}4.*|{ushou_ptrn2}4)"))
+  h05_regex <- suppressWarnings(glue("({ushou_ptrn1}5.*|{ushou_ptrn2}5)"))
+  h06_regex <- suppressWarnings(glue("({ushou_ptrn1}6.*|{ushou_ptrn2}6)"))
+  h07_regex <- suppressWarnings(glue("({ushou_ptrn1}7.*|{ushou_ptrn2}7)"))
+
+  # US Senate
+  sen_regex <- "^(U\\.?\\s?S\\.?||UNITED STATES) Senat(e|or)$"
   sn2_regex <- "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired? Term\\)"
 
 
@@ -106,10 +110,12 @@ std_race <- function(vec) {
     inner(ccm_regex, "CCM0000 County Manager") %>%
     inner(sch3_regx, "SCH") %>%
     inner(sch4_regx, "SCH0") %>%
+    inner(sch5_regx, "SCH00") %>%
     inner(scb_regex, "SCH0000 School Board Chair") %>%
     inner(sca_regex, "SCH0000 School Board At-Large") %>%
     inner(hou_regex, "HOU0") %>%
     inner(ssn_regex, "SEN0") %>%
+    inner(ssn2_regx, "SEN00") %>%
     inner(rgd_regex, "RGD0000 Register of Deeds") %>%
     inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
     inner(wat_regex, "WAT00") %>%
