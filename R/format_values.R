@@ -61,6 +61,7 @@ std_race <- function(vec) {
   sow_regex <- "Soil (and|&) Water.*"
 
   # Congress
+  # treat CNG for abbeville as well
   ushou_ptrn1 <- "CON(G|G0|00|0)0"
   ushou_ptrn2 <- "U\\.?S\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dist(|rict)\\s+" # one way a small minority show it
   h01_regex <- suppressWarnings(glue("({ushou_ptrn1}1.*|{ushou_ptrn2}1)"))

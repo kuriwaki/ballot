@@ -155,19 +155,21 @@ get_precinct <- function(df) {
 #' ald_p <- get_precinct_range(allendale)
 #' wprecinct <- add_precinct(allendale, ald_p)
 add_precinct <- function(votes, pkey) {
+  stopifnot(n_distinct(votes$county) == 1)
+  pkey_append <- pkey %>%
+    select(p_name, precinct_id, p_start_id, p_end_id) %>%
+    tbl_df() %>%
+    mutate_if(is.double, as.integer)
+
+  # trivial interval that precinct should match
+  votes <- votes %>%
+    mutate(p_start_id = id,
+           p_end_id = id)
+
+  wprecinct <- interval_left_join(votes, pkey_append, by = c("p_start_id", "p_end_id")) %>%
+    select(-matches("p_(start|end)_id")) # no longer needed
 
   # do a join-by-range with data.table
-  library(data.table)
-  setDT(votes)
-  setDT(pkey)
-
-  wprecinct <- pkey[votes,
-                    on = .(p_start_id <= id,
-                           p_end_id >= id,
-                           county = county),
-                    nomatch = NA]  # all rows in votes
-  wprecinct <- tbl_df(wprecinct) %>%
-    select(-p_start_id, -p_end_id)
   stopifnot(nrow(votes) == nrow(wprecinct))
 
   # now remove the headers -- since we now have precinct.

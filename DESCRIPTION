@@ -5,11 +5,12 @@ Version: 0.1.0
 Authors@R: person("Shiro", "Kuriwaki", email = "kuriwaki@g.harvard.edu",
                   role = c("aut", "cre"))
 Maintainer: Shiro Kuriwaki <kuriwaki@g.harvard.edu>
-Description: A set of functions to read publically available ballot image data.
+Description: A set of functions to read publicly available ballot image data.
     Mainly built towards reading the South Carolina audit files from iVotronic 
     readers.
 Depends: 
     dplyr,
+    fuzzyjoin,
     purrr,
     readr,
     stringr,
