@@ -109,7 +109,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #' @param df a EL155 dataset, read through read_EL155
 #'
 #' @return A dataset keyed by precinct. start_id and end_id refer to the range of
-#' the precinct in terms of the row IDs in read_EL155 output. column `p_name` is
+#' the precinct in terms of the row IDs in read_EL155 output. column `precinct` is
 #' is the name portion of the precinct header. `precinct_id` is the ID of
 #' precinct within the county
 #'
@@ -125,9 +125,9 @@ get_precinct <- function(df) {
     distinct(text, .keep_all = TRUE)
 
   pfirst_range <- pfirst %>%
-    mutate(p_name = gsub(".*(?=PRECINCT)", "", text, perl = TRUE),
-           p_name = gsub("\\s+ELECTION ID: [0-9A-Z]+", "", p_name, perl = TRUE),
-           p_name = gsub("\\s+", " ", p_name, perl = TRUE)) %>%
+    mutate(precinct = gsub(".*(?=PRECINCT)", "", text, perl = TRUE),
+           precinct = gsub("\\s+ELECTION ID: [0-9A-Z]+", "", precinct, perl = TRUE),
+           precinct = gsub("\\s+", " ", precinct, perl = TRUE)) %>%
     mutate(precinct_id = 1:n(),
            p_start_id = id + 1,
            p_end_id = lead(id, 1) - 1,
@@ -157,7 +157,7 @@ get_precinct <- function(df) {
 add_precinct <- function(votes, pkey) {
   stopifnot(n_distinct(votes$county) == 1)
   pkey_append <- pkey %>%
-    select(p_name, precinct_id, p_start_id, p_end_id) %>%
+    select(precinct, precinct_id, p_start_id, p_end_id) %>%
     tbl_df() %>%
     mutate_if(is.double, as.integer)
 
