@@ -1,6 +1,6 @@
 #' Wrapper from path to formatted data
 #'
-#' Use the step-by-step parsing  functions to generate all votes in a race
+#' Use the step-by-step parsing  functions to generate all votes in a contest
 #'
 #' @param paths a vector of paths of the county-directory
 #'
@@ -12,7 +12,7 @@ read_format_EL155 <- function(paths) {
   # countynames
   cnames <- gsub(".*/([A-z]+)$", "\\1", paths)
 
-  all_race <-
+  all_contest <-
     foreach(i = 1:length(paths),
             .inorder = TRUE,
             .combine = "bind_rows",
@@ -42,7 +42,7 @@ read_format_EL155 <- function(paths) {
               wIDs
             }
 
-  all_race
+  all_contest
 }
 
 #' Read a EL155 file
@@ -209,7 +209,7 @@ parse_EL155 <-
   function(votes, vote_col = "text",
            start_pos = c(1,  9, 14, 16, 21, 61),
            end_pos =   c(7, 12, 14, 19, 59, 131),
-           col_names = c("machine", "ballot_style", "marker", "cand_id", "cand_name", "race")) {
+           col_names = c("machine", "ballot_style", "marker", "cand_id", "cand_name", "contest_name")) {
 
     covariates <- select(votes, -one_of(vote_col))
 
@@ -241,7 +241,7 @@ identify_voter <- function(df) {
 }
 
 
-#' Add unique ID for each voter in a race.
+#' Add unique ID for each voter in a contest.
 #'
 #' This implies adding county and voter_id within county
 #'
