@@ -209,7 +209,7 @@ parse_EL155 <-
   function(votes, vote_col = "text",
            start_pos = c(1,  9, 14, 16, 21, 61),
            end_pos =   c(7, 12, 14, 19, 59, 131),
-           col_names = c("machine", "ballot_style", "marker", "cand_id", "cand_name", "contest_name")) {
+           col_names = c("machine", "ballot_style", "marker", "choice_id", "choice_name", "contest_name")) {
 
     covariates <- select(votes, -one_of(vote_col))
 

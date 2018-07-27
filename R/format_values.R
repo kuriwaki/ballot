@@ -1,14 +1,14 @@
-#' Standardize race variables to proper names with leading 7-character codes
+#' Standardize contest variables to proper names with leading 7-character codes
 #'
-#' @param vec Vector of unstandardized race names
+#' @param vec Vector of unstandardized contest names
 #'
 #' @export
 #'
 #' @examples
 #' vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator", "CCNL001 Council 1", "CCD0001 Council 1")
-#' std_race(vec)
+#' std_contest(vec)
 #'
-std_race <- function(vec) {
+std_contest <- function(vec) {
   prs_regex <- "President.*"
   pty_regex <- "Straight Party"
   none_regx <- ".*NO VOTES CAST.*"
@@ -134,7 +134,7 @@ std_race <- function(vec) {
 
 
 
-#' Standardize solicitor race with district number, based on county
+#' Standardize solicitor contest with district number, based on county
 #'
 #' @param vec a character vector that contains some solicitor district values
 #' @param is_solicitor a logical vector of the same length as \code{vec} that is
@@ -153,11 +153,11 @@ std_race <- function(vec) {
 std_sc_solicit <- function(vec, is_solicit, county, data = sc_counties) {
   stopifnot(length(vec) == length(is_solicit) & length(vec) == length(county))
 
-  county_tbl <- tibble(county = county, race = vec)
+  county_tbl <- tibble(county = county, contest = vec)
 
-  coded <- left_join(county_tbl,  select(sc_counties, county, sol_race_code), by = "county") %>%
-    mutate(race_code = str_c(sol_race_code, vec, sep = " ")) %>%
-    pull(race_code)
+  coded <- left_join(county_tbl,  select(sc_counties, county, sol_contest_code), by = "county") %>%
+    mutate(contest_code = str_c(sol_contest_code, vec, sep = " ")) %>%
+    pull(contest_code)
 
   coded[!is_solicit] <- NA
 
@@ -165,7 +165,7 @@ std_sc_solicit <- function(vec, is_solicit, county, data = sc_counties) {
 }
 
 
-#' Standardize race with first letter after code
+#' Standardize contest with first letter after code
 #'
 #' @param vec a character vector that contains some values to be used in code
 #' @param use a logical vector of the same length as \code{vec} that is
@@ -189,7 +189,7 @@ std_sc_first <- function(vec, use, code_regex, code_replace) {
 }
 
 
-#' Standardize options in referendum race
+#' Standardize options in referendum contest
 #'
 #'
 #' @param vec Vector of candidate / vote options
@@ -210,15 +210,15 @@ std_yes_no <- function(vec) {
 #'
 #' Removes a special character, change to ascii for standardization, remove periods at the end of names
 #'
-#' @param tbl A table with the column "cand_name"
+#' @param tbl A table with the column "choice_name"
 #'
 #' @export
 #'
 cand_to_ascii <- function(tbl) {
   tbl %>%
-    mutate(cand_name = str_replace(cand_name, "�", ""),
-           cand_name = iconv(cand_name, to = "ASCII", sub = ""),
-           cand_name = str_replace(cand_name, "\\.$", ""))
+    mutate(choice_name = str_replace(choice_name, "�", ""),
+           choice_name = iconv(choice_name, to = "ASCII", sub = ""),
+           choice_name = str_replace(choice_name, "\\.$", ""))
 }
 
 
