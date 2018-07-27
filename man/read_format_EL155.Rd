@@ -10,5 +10,5 @@ read_format_EL155(paths)
 \item{paths}{a vector of paths of the county-directory}
 }
 \description{
-Use the step-by-step parsing  functions to generate all votes in a race
+Use the step-by-step parsing  functions to generate all votes in a contest
 }

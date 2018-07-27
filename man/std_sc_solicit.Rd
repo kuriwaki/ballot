@@ -2,7 +2,7 @@
 % Please edit documentation in R/format_values.R
 \name{std_sc_solicit}
 \alias{std_sc_solicit}
-\title{Standardize solicitor race with district number, based on county}
+\title{Standardize solicitor contest with district number, based on county}
 \usage{
 std_sc_solicit(vec, is_solicit, county, data = sc_counties)
 }
@@ -17,7 +17,7 @@ std_sc_solicit(vec, is_solicit, county, data = sc_counties)
 \code{TRUE} when the index is a solicitor, and \code{FALSE} otherwise}
 }
 \description{
-Standardize solicitor race with district number, based on county
+Standardize solicitor contest with district number, based on county
 }
 \examples{
 raw <- c("Solicitor Circuit District 14", "Solicitor 10th Circuit", "County Council")

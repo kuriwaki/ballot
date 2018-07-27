@@ -11,7 +11,7 @@ get_precinct(df)
 }
 \value{
 A dataset keyed by precinct. start_id and end_id refer to the range of
-the precinct in terms of the row IDs in read_EL155 output. column `p_name` is
+the precinct in terms of the row IDs in read_EL155 output. column `precinct` is
 is the name portion of the precinct header. `precinct_id` is the ID of
 precinct within the county
 }

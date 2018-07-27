@@ -2,7 +2,7 @@
 % Please edit documentation in R/format_values.R
 \name{std_sc_first}
 \alias{std_sc_first}
-\title{Standardize race with first letter after code}
+\title{Standardize contest with first letter after code}
 \usage{
 std_sc_first(vec, use, code_regex, code_replace)
 }
@@ -17,5 +17,5 @@ use <- c(TRUE, TRUE, FALSE)
 std_sc_first(raw, use, "CSB ", "SCH")}
 }
 \description{
-Standardize race with first letter after code
+Standardize contest with first letter after code
 }

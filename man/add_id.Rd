@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_SC.R
 \name{add_id}
 \alias{add_id}
-\title{Add unique ID for each voter in a race.}
+\title{Add unique ID for each voter in a contest.}
 \usage{
 add_id(df, st = "SC")
 }

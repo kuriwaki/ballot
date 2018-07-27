@@ -6,7 +6,7 @@
 \usage{
 parse_EL155(votes, vote_col = "text", start_pos = c(1, 9, 14, 16, 21, 61),
   end_pos = c(7, 12, 14, 19, 59, 131), col_names = c("machine",
-  "ballot_style", "marker", "cand_id", "cand_name", "race"))
+  "ballot_style", "marker", "choice_id", "choice_name", "contest_name"))
 }
 \arguments{
 \item{votes}{data frame with row}

@@ -214,7 +214,8 @@ std_yes_no <- function(vec) {
 #'
 #' @export
 #'
-cand_to_ascii <- function(tbl) {
+choice_to_ascii <- function(tbl) {
+  stopifnot(any(colnames(tbl) == "choice_name"))
   tbl %>%
     mutate(choice_name = str_replace(choice_name, "�", ""),
            choice_name = iconv(choice_name, to = "ASCII", sub = ""),

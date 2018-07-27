@@ -2,7 +2,7 @@
 % Please edit documentation in R/format_values.R
 \name{std_yes_no}
 \alias{std_yes_no}
-\title{Standardize options in referendum race}
+\title{Standardize options in referendum contest}
 \usage{
 std_yes_no(vec)
 }
@@ -10,7 +10,7 @@ std_yes_no(vec)
 \item{vec}{Vector of candidate / vote options}
 }
 \description{
-Standardize options in referendum race
+Standardize options in referendum contest
 }
 \examples{
 std_yes_no(c("No", "Opposed to Question", "Opposed", "W/I ANY OPPOSED"))
