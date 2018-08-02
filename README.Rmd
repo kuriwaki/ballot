@@ -1,5 +1,5 @@
 ---
-title: "`ballot`"
+title: "ballot"
 output: github_document
 ---
 
@@ -8,16 +8,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, include = FALSE}
-dir <- "~/Dropbox/local-representation"
+dir <- "~/Dropbox/EL155s"
 library(noncensus)
 library(tidyverse)
 library(foreach)
 library(ballot)
 library(purrr)
+library(fs)
 library(data.table)
 ```
 
 
+Install by 
 
 ```{r, eval = FALSE}
 devtools::install_github("kuriwaki/ballot")
@@ -30,8 +32,8 @@ devtools::install_github("kuriwaki/ballot")
 A wrapper across all counties in a given election is 
 
 ```{r}
-subdirs <- list.dirs(file.path(dir, "build/input/SC_2016-06-14"), recursive = FALSE)
-df <- read_format_EL155(subdirs)
+subdirs <- dir_ls(path(dir, "input/SC_2017-11-28"), recursive = FALSE)
+df <- suppressWarnings(read_format_EL155(subdirs))
 ```
 
 To do this county by county, see the following.
@@ -44,7 +46,7 @@ To do this county by county, see the following.
 Read the EL155 file (raw file output for ballot images) and format. 
 
 ```{r}
-p2016 <- read_EL155(file.path(dir, "build/input/SC_2016-06-14/Spartanburg/EL155"), "Spartanburg")
+p2016 <- read_EL155(path(dir, "input/SC_2016-06-14/Spartanburg/EL155"), "Spartanburg")
 p2016
 ```
 
@@ -82,15 +84,5 @@ Add voter identifier that will be unique with many counties
 
 ```{r}
 df <- add_id(with_voter)
-
-```
-
-Finally, cast the long dataset to wide, to voter level
-
-```{r}
-tbl <- dcast(as.data.table(df),  voter_id ~ race, value.var = "cand_name") %>% 
-  tbl_df()
-
-tbl
 ```
 
