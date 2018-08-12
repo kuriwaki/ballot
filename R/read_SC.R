@@ -86,19 +86,18 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
   n_precincts <- nonempty %>% filter(grepl("CAND VOTES", text)) %>% nrow()
   cat(glue::glue("{cname} (code {eID}) with {n_precincts} precincts, "), "\n")
 
-  df <- nonempty %>%
+  nonempty %>%
     filter(!grepl("^[\\s\\d]+$", text, perl = TRUE)) %>%
     filter(!grepl("REPORT-EL155\\s+PAGE\\s+[0-9+]", text, perl = TRUE)) %>% # Dorchester
-    filter(!str_detect(text, "^\\s+General Election\\s+")) %>% # in Marlbolo, precinct footer
+    filter(!str_detect(text, "ral Election\\s*")) %>%
     filter(!str_detect(text, "^\\s+[A-z]+\\sCounty\\s*$")) %>% # Fairfield and Jasper County
     filter(!str_detect(text, "^\\s+test\\s*$")) %>% # Beaufort footer
-    filter(!str_detect(text, "^\\s+Official")) %>% # Lexington 2016 footer
+    filter(!str_detect(text, regex("^\\s+Official", ignore_case = TRUE))) %>%
     filter(!str_detect(text, "^\\s+[A-z]+\\sCounty.*Results$")) %>% # Charleston header
-    filter(!str_detect(text, "^\\s+November [0-9], 201[0-9]")) %>% # 2014 header
-    filter(!str_detect(text, "CAND VOTES")) %>%
-    filter(!str_detect(text, "PRECINCT TOTALS"))
-
-  df
+    filter(!str_detect(text, "[0-9], 201[0-9]")) %>% # Date
+    filter(!str_detect(text, regex("CAND VOTES", ignore_case = TRUE))) %>%
+    filter(!str_detect(text, regex("ELECTION", ignore_case = TRUE))) %>%
+    filter(!str_detect(text, regex("PRECINCT TOTALS", ignore_case = TRUE)))
 }
 
 #' Extract precinct-identifying information
