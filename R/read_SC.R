@@ -96,7 +96,6 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
     filter(!str_detect(text, "^\\s+[A-z]+\\sCounty.*Results$")) %>% # Charleston header
     filter(!str_detect(text, "[0-9], 201[0-9]")) %>% # Date
     filter(!str_detect(text, regex("CAND VOTES", ignore_case = TRUE))) %>%
-    filter(!str_detect(text, regex("ELECTION", ignore_case = TRUE))) %>%
     filter(!str_detect(text, regex("PRECINCT TOTALS", ignore_case = TRUE)))
 }
 
