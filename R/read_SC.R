@@ -83,22 +83,11 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
     unlist()
 
 
-  n_precincts <- nonempty %>% filter(grepl("CAND VOTES", text)) %>% nrow()
+  n_precincts <- nonempty %>% filter(str_detect(text, "CAND VOTES")) %>% nrow()
   cat(glue::glue("{cname} (code {eID}) with {n_precincts} precincts, "), "\n")
 
   nonempty %>%
-    filter(!grepl("^[\\s\\d]+$", text, perl = TRUE)) %>%
-    filter(!grepl("REPORT-EL155\\s+PAGE\\s+[0-9+]", text, perl = TRUE)) %>% # Dorchester
-    filter(!str_detect(text, regex("General Election\\s*", ignore_case = TRUE))) %>%
-    filter(!str_detect(text, regex("Special Election\\s*", ignore_case = TRUE))) %>%
-    filter(!str_detect(text, "^\\s+[A-z]+\\sCounty\\s*(SC|)\\s*$")) %>%
-    filter(!str_detect(text, "^\\s+test\\s*$")) %>% # Beaufort footer
-    filter(!str_detect(text, regex("^\\s+Official", ignore_case = TRUE))) %>%
-    filter(!str_detect(text, "^\\s+[A-z]+\\sCounty.*Results$")) %>% # Charleston header
-    filter(!str_detect(text, "[0-9], 201[0-9]")) %>% # Date
-    filter(!str_detect(text, regex("CAND VOTES", ignore_case = TRUE))) %>%
-    filter(!str_detect(text, regex("Official", ignore_case = TRUE))) %>%
-    filter(!str_detect(text, regex("PRECINCT TOTALS", ignore_case = TRUE)))
+    filter(str_detect(text, "^[0-9]{7}\\s+") | str_detect(text, "(RUN DATE|ELECTION ID:)"))
 }
 
 #' Extract precinct-identifying information
