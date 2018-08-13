@@ -89,13 +89,15 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
   nonempty %>%
     filter(!grepl("^[\\s\\d]+$", text, perl = TRUE)) %>%
     filter(!grepl("REPORT-EL155\\s+PAGE\\s+[0-9+]", text, perl = TRUE)) %>% # Dorchester
-    filter(!str_detect(text, "ral Election\\s*")) %>%
-    filter(!str_detect(text, "^\\s+[A-z]+\\sCounty\\s*$")) %>% # Fairfield and Jasper County
+    filter(!str_detect(text, regex("General Election\\s*", ignore_case = TRUE))) %>%
+    filter(!str_detect(text, regex("Special Election\\s*", ignore_case = TRUE))) %>%
+    filter(!str_detect(text, "^\\s+[A-z]+\\sCounty\\s*(SC|)\\s*$")) %>%
     filter(!str_detect(text, "^\\s+test\\s*$")) %>% # Beaufort footer
     filter(!str_detect(text, regex("^\\s+Official", ignore_case = TRUE))) %>%
     filter(!str_detect(text, "^\\s+[A-z]+\\sCounty.*Results$")) %>% # Charleston header
     filter(!str_detect(text, "[0-9], 201[0-9]")) %>% # Date
     filter(!str_detect(text, regex("CAND VOTES", ignore_case = TRUE))) %>%
+    filter(!str_detect(text, regex("Official", ignore_case = TRUE))) %>%
     filter(!str_detect(text, regex("PRECINCT TOTALS", ignore_case = TRUE)))
 }
 
