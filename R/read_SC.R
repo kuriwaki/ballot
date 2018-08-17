@@ -249,15 +249,16 @@ add_id <- function(df, st = "SC") {
   max_d_p <- str_length(as.character(max(df$precinct_id, na.rm = TRUE)))
 
   state_fips <- counties %>%
+    mutate(state = as.character(state)) %>% # not factor
     filter(state == st) %>%
     mutate(county = str_to_title(gsub(" County", "", county_name))) %>%
     mutate(fips = paste0(state_fips, county_fips)) %>%
-    select(fips, county)
+    select(st = state, fips, county)
 
   left_join(df, state_fips, by = c("county")) %>%
     rename(id_within_county = voter_id) %>%
     mutate(voter_id = paste0(fips, "-", str_pad(as.character(id_within_county), max_d_v, pad = "0"))) %>%
     mutate(precinct_id = paste0(fips, "-", str_pad(as.character(precinct_id), max_d_p, pad = "0"))) %>%
     select(-id_within_county) %>%
-    select(voter_id, county, fips, voter_id, precinct_id, everything())
+    select(st, county, fips, voter_id, precinct_id, everything())
 }
