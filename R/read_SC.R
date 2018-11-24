@@ -13,34 +13,36 @@ read_format_EL155 <- function(paths) {
   cnames <- gsub(".*/([A-z]+)$", "\\1", paths)
 
   all_contest <-
-    foreach(i = 1:length(paths),
-            .inorder = TRUE,
-            .combine = "bind_rows",
-            .packages = c("ballot", "dplyr")) %dopar% {
+    foreach(
+      i = 1:length(paths),
+      .inorder = TRUE,
+      .combine = "bind_rows",
+      .packages = c("ballot", "dplyr")
+    ) %dopar% {
+      el155name <- grep("EL155", list.files(paths[i]), value = TRUE, ignore.case = TRUE)
 
-              el155name <- grep("EL155", list.files(paths[i]), value = TRUE, ignore.case = TRUE)
+      # rarely there are more than one EL155 file
+      rows <- foreach(elpath = glue("{paths[i]}/{el155name}"), .combine = "bind_rows") %do% {
+        read_EL155(path = elpath, cname = cnames[i])
+      }
 
-              # rarely there are more than one EL155 file
-              rows <- foreach(elpath = glue("{paths[i]}/{el155name}"), .combine = "bind_rows") %do% {
-                read_EL155(path = elpath, cname = cnames[i])}
-
-              # if two, re-index
-              if (rows$id[nrow(rows)] != nrow(rows)) rows <- mutate(rows, id = 1:n()) # re-index if composite
-
-
-              pkey <- get_precinct(rows)
-              wprecinct <- add_precinct(rows, pkey)
-
-              parsed_df <- parse_EL155(votes = wprecinct)
-              wvoter <- identify_voter(parsed_df)
+      # if two, re-index
+      if (rows$id[nrow(rows)] != nrow(rows)) rows <- mutate(rows, id = 1:n()) # re-index if composite
 
 
-              wIDs  <- add_id(wvoter)
-              rm(wvoter, parsed_df, rows)
-              gc()
+      pkey <- get_precinct(rows)
+      wprecinct <- add_precinct(rows, pkey)
 
-              wIDs
-            }
+      parsed_df <- parse_EL155(votes = wprecinct)
+      wvoter <- identify_voter(parsed_df)
+
+
+      wIDs <- add_id(wvoter)
+      rm(wvoter, parsed_df, rows)
+      gc()
+
+      wIDs
+    }
 
   all_contest
 }
@@ -54,19 +56,20 @@ read_format_EL155 <- function(paths) {
 #'
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-#'
 read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
                        cname = "Allendale") {
-
-  raw <-  tibble(text = suppressWarnings(read_lines(path))) %>%
-    mutate(id = 1:n(),
-           county = cname) %>%
+  raw <- tibble(text = suppressWarnings(read_lines(path))) %>%
+    mutate(
+      id = 1:n(),
+      county = cname
+    ) %>%
     select(id, county, text)
 
 
 
   # weird encoding
-  valid <- raw %>% filter(!grepl("^\033", text)) %>% # beginnign
+  valid <- raw %>%
+    filter(!grepl("^\033", text)) %>% # beginnign
     mutate(text = str_replace(text, pattern = "<a0> ", " ")) # after Reeves
   nrow(valid)
 
@@ -114,14 +117,18 @@ get_precinct <- function(df) {
     distinct(text, .keep_all = TRUE)
 
   pfirst_range <- pfirst %>%
-    mutate(precinct = gsub(".*(?=PRECINCT)", "", text, perl = TRUE),
-           precinct = gsub("\\s+ELECTION ID: [0-9A-Z]+", "", precinct, perl = TRUE),
-           precinct = gsub("\\s+", " ", precinct, perl = TRUE)) %>%
-    mutate(precinct_id = 1:n(),
-           p_start_id = id + 1,
-           p_end_id = lead(id, 1) - 1,
-           text = NULL,
-           id = NULL)
+    mutate(
+      precinct = gsub(".*(?=PRECINCT)", "", text, perl = TRUE),
+      precinct = gsub("\\s+ELECTION ID: [0-9A-Z]+", "", precinct, perl = TRUE),
+      precinct = gsub("\\s+", " ", precinct, perl = TRUE)
+    ) %>%
+    mutate(
+      precinct_id = 1:n(),
+      p_start_id = id + 1,
+      p_end_id = lead(id, 1) - 1,
+      text = NULL,
+      id = NULL
+    )
 
   pfirst_range$p_end_id[nrow(pfirst_range)] <- max(df$id)
 
@@ -152,8 +159,10 @@ add_precinct <- function(votes, pkey) {
 
   # trivial interval that precinct should match
   votes <- votes %>%
-    mutate(p_start_id = id,
-           p_end_id = id)
+    mutate(
+      p_start_id = id,
+      p_end_id = id
+    )
 
   wprecinct <- interval_left_join(votes, pkey_append, by = c("p_start_id", "p_end_id")) %>%
     select(-matches("p_(start|end)_id")) # no longer needed
@@ -163,7 +172,7 @@ add_precinct <- function(votes, pkey) {
 
   # now remove the headers -- since we now have precinct.
   # once we have precinct and asterisk, rows are identifiable
-  wprecinct <-  wprecinct %>%
+  wprecinct <- wprecinct %>%
     filter(!grepl(".*ELECTION ID: [0-9+]", text)) %>%
     filter(!grepl("PRECINCT TOTALS", text)) %>%
     filter(!grepl("CANDIDATES RECEIVING A VOTE", text))
@@ -193,19 +202,17 @@ add_precinct <- function(votes, pkey) {
 #' ald_p <- get_precinct_range(allendale)
 #' wprecinct <- add_precinct(allendale, ald_p)
 #' df <- parse_EL155(wprecinct)
-#'
 parse_EL155 <-
   function(votes, vote_col = "text",
-           start_pos = c(1,  9, 14, 16, 21, 61),
-           end_pos =   c(7, 12, 14, 19, 59, 131),
-           col_names = c("machine", "ballot_style", "marker", "choice_id", "choice_name", "contest_name")) {
-
+             start_pos = c(1, 9, 14, 16, 21, 61),
+             end_pos = c(7, 12, 14, 19, 59, 131),
+             col_names = c("machine", "ballot_style", "marker", "choice_id", "choice_name", "contest_name")) {
     covariates <- select(votes, -one_of(vote_col))
 
     concat <- str_c(votes[[vote_col]], collapse = "\n")
     fwf <- suppressWarnings(read_fwf(concat, col_positions = fwf_positions(start_pos, end_pos, col_names)))
 
-    bind_cols(covariates, fwf)  %>%
+    bind_cols(covariates, fwf) %>%
       mutate(machine = as.character(machine)) %>%
       mutate(voter_top = coalesce(as.integer(marker == "*"), 0L)) %>%
       select(-marker)
@@ -241,7 +248,6 @@ identify_voter <- function(df) {
 #' @export
 #'
 add_id <- function(df, st = "SC") {
-
   data("counties")
 
 
