@@ -2,18 +2,24 @@
 % Please edit documentation in R/format_values.R
 \name{std_contest}
 \alias{std_contest}
-\title{Standardize contest variables to proper names with leading 7-character codes}
+\title{Standardize contest variables}
 \usage{
-std_contest(vec)
+std_contest(vec, .type = NULL)
 }
 \arguments{
 \item{vec}{Vector of unstandardized contest names}
 }
 \description{
-Standardize contest variables to proper names with leading 7-character codes
+Change a vector of contest names to o proper names with leading 7-character codes
 }
 \examples{
-vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator", "CCNL001 Council 1", "CCD0001 Council 1")
+vec <- c(
+  "CON0001 House 1", "CONG007 House 7", "U. S. Senator",
+  "President", "PREsident",
+  "Straight Party",
+  "CON0001 House 1", "CONG007 House 7",
+  "U. S. Senator", "CCNL001 Council 1",
+  "CCNL001 Council 1", "CCD0001 Council 1"
+)
 std_contest(vec)
-
 }

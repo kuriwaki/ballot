@@ -14,5 +14,4 @@ Standardize options in referendum contest
 }
 \examples{
 std_yes_no(c("No", "Opposed to Question", "Opposed", "W/I ANY OPPOSED"))
-
 }

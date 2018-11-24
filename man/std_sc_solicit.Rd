@@ -24,5 +24,4 @@ raw <- c("Solicitor Circuit District 14", "Solicitor 10th Circuit", "County Coun
 is_solicit <- c(TRUE, TRUE, FALSE)
 county <- c("Anderson", "Jasper", "Charleston")
 std_sc_solicit(raw, is_solicit, county)
-
 }

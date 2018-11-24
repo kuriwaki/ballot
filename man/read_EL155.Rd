@@ -17,5 +17,4 @@ Read a EL155 file
 }
 \examples{
 allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-
 }

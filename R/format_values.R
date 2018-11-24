@@ -1,4 +1,6 @@
-#' Standardize contest variables to proper names with leading 7-character codes
+#' Standardize contest variables
+#'
+#' Change a vector of contest names to o proper names with leading 7-character codes
 #'
 #' @param vec Vector of unstandardized contest names
 #'
@@ -10,7 +12,7 @@
 #' vec <- c(
 #'   "CON0001 House 1", "CONG007 House 7", "U. S. Senator",
 #'   "President", "PREsident",
-#'   "Straight Party", "Straight Party President",
+#'   "Straight Party",
 #'   "CON0001 House 1", "CONG007 House 7",
 #'   "U. S. Senator", "CCNL001 Council 1",
 #'   "CCNL001 Council 1", "CCD0001 Council 1"
@@ -21,8 +23,8 @@ std_contest <- function(vec, .type = NULL) {
 
   # special codes
   regex_spcl <- tribble(
-    ~code, ~pattern,
-    "Straight Party", "PTY0000 Straight Party",
+    ~pattern, ~replace,
+    ".*Straight Party.*", "PTY0000 Straight Party",
     ".*NO VOTES CAST.*", "A000000 Absentee for all Offices",
   )
 

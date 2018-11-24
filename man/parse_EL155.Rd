@@ -4,8 +4,8 @@
 \alias{parse_EL155}
 \title{separate vote rows in to columns}
 \usage{
-parse_EL155(votes, vote_col = "text", start_pos = c(1, 9, 14, 16, 21, 61),
-  end_pos = c(7, 12, 14, 19, 59, 131), col_names = c("machine",
+parse_EL155(votes, vote_col = "text", start_pos = c(1, 9, 14, 16, 21,
+  61), end_pos = c(7, 12, 14, 19, 59, 131), col_names = c("machine",
   "ballot_style", "marker", "choice_id", "choice_name", "contest_name"))
 }
 \arguments{
@@ -30,5 +30,4 @@ allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 ald_p <- get_precinct_range(allendale)
 wprecinct <- add_precinct(allendale, ald_p)
 df <- parse_EL155(wprecinct)
-
 }
