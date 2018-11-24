@@ -7,10 +7,15 @@
 #' @import glue
 #'
 #' @examples
-#' vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator", "CCNL001 Council 1", "CCD0001 Council 1")
+#' vec <- c("CON0001 House 1", "CONG007 House 7", "U. S. Senator",
+#'          "President", "PREsident",
+#'          "Straight Party", "Straight Party President",
+#'          "CON0001 House 1", "CONG007 House 7",
+#'          "U. S. Senator", "CCNL001 Council 1",
+#'          "CCNL001 Council 1", "CCD0001 Council 1")
 #' std_contest(vec)
 #'
-std_contest <- function(vec) {
+std_contest <- function(vec, .type = NULL) {
 
 
   # special codes
@@ -78,7 +83,7 @@ std_contest <- function(vec) {
 
 
   regex_ctcnl <- tribble(
-    ~pattern, ~code,
+    ~pattern, ~replace,
     "County Council At( |-)Large",        "CCL0000 County Coucil at Large",
     "^C(CD|C0|NC(?=0)|OC(?=000))",        "CCL", # standardize CCD/CC0... three character  to CCL
     "^C(CNL|NCL|OCL|OC(?=00[1-9])|YCL)",  "CCL0", # standardize CCNL to CCL, and CC001 to CCL0
@@ -99,70 +104,38 @@ std_contest <- function(vec) {
 
 
   # multiple votes per person
-  regex_spd <-tribble(
+  regex_spd <- tribble(
     ~pattern, ~replace,
   "(^WAT00|^WSD00|^WSH00|^WTR00|^WS000|^WATWR)",  "WAT00",
   "Soil (and|&) Water.*", "SOW0000 Soil and Water",
   )
 
+  regex_recode <- bind_rows(
+    regex_natnl,
+    regex_spcl,
+    regex_stwid,
+    regex_stleg,
+    regex_ctwid,
+    regex_ctcnl,
+    regex_schbd,
+    regex_spd,
+  )
 
+  # use only certain keys
+  if (!is.null(.type))
+    regex_recode <- regex_recode
 
-  inner <- function(input, regex_str, replacement) {
-    str_replace(input, regex(regex_str, ignore_case = TRUE), replacement)
-  }
+  # named vector
+  recode_vec <- regex_recode$replace
+  names(recode_vec) <- regex_recode$pattern
 
-  vec %>%
-    inner(prs_regex, "PRS0000 President")  %>%
-    inner(pty_regex, "PTY0000 Straight Party") %>%
-    inner(none_regx, "A000000 Absentee for all Offices") %>%
-    inner(gov_regex, "GOV0000 Governor")  %>%
-    inner(ltg_regex, "LGV0000 Lieutenant Governor") %>%
-    inner(sos_regex, "SOS0000 Secretary of State") %>%
-    inner(sad_regex, "AUD0000 Auditor") %>%
-    inner(atg_regex, "ATG0000 Attorney General") %>%
-    inner(adj_regex, "ADJ0000 Adjutant General") %>%
-    inner(str_regex, "STRES00 State Treasurer") %>%
-    inner(cmp_regex, "CMP0000 Comptroller General") %>%
-    inner(ssi_regex, "SSI0000 State Superintendent of Education") %>%
-    inner(agr_regex, "AGR0000 State Commissioner of Agriculture") %>%
-    inner(cad_regex, "CAUD000 County Auditor") %>%
-    inner(ctr_regex, "CTRES00 County Treasurer") %>%
-    inner(cor_regex, "COR0000 Coroner") %>%
-    inner(shf_regex, "SHF0000 Sheriff") %>%
-    inner(clr_regex, "CLR0000 Clerk of Court") %>%
-    inner(jpr_regex, "JPRB000 Probate Judge") %>%
-    inner(rgd_regex, "RGD0000 Register of Deeds") %>%
-    inner(rmc_regex, "RMC0000 Register of Mesne Conveyance") %>%
-    inner(ccl3_regx, "CCL") %>%
-    inner(ccl4_regx, "CCL0") %>%
-    inner(ccl5_regx, "CCL00") %>%
-    inner(ccl6_regx, "CCL000") %>%
-    inner(ccc_regex, "CCL0000 County Coucil Chair") %>%
-    inner(cal_regex, "CCL0000 County Coucil at Large") %>%
-    inner(ccs_regex, "CCS0000 County Supervisor") %>%
-    inner(ccm_regex, "CCM0000 County Manager") %>%
-    inner(sch3_regx, "SCH") %>%
-    inner(sch4_regx, "SCH0") %>%
-    inner(sch5_regx, "SCH00") %>%
-    inner(scb_regex, "SCH0000 School Board Chair") %>%
-    inner(sca_regex, "SCH0000 School Board At-Large") %>%
-    inner(hou_regex, "HOU0") %>%
-    inner(ssn_regex, "SEN0") %>%
-    inner(ssn2_regx, "SEN00") %>%
-    inner(wat_regex, "WAT00") %>%
-    inner(sow_regex, "SOW0000 Soil and Water Commissioner") %>%
-    inner(h01_regex, "USHOU01 US House SC-01") %>%
-    inner(h02_regex, "USHOU02 US House SC-02") %>%
-    inner(h03_regex, "USHOU03 US House SC-03") %>%
-    inner(h04_regex, "USHOU04 US House SC-04") %>%
-    inner(h05_regex, "USHOU05 US House SC-05") %>%
-    inner(h06_regex, "USHOU06 US House SC-06") %>%
-    inner(h07_regex, "USHOU07 US House SC-07") %>%
-    inner(sen_regex, "USSEN01 US Senator") %>%
-    inner(sn2_regex, "USSEN02 US Senator (Special)")
+  # replace
+  str_replace_all(vec, regex(recode_vec, ignore_case = TRUE))
 }
 
 # 54 secs for 1 million rows
+
+
 
 
 #' Standardize solicitor contest with district number, based on county
