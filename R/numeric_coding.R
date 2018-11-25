@@ -9,6 +9,8 @@
 #' @param cand A key that matches candidate names to parties
 #' @param ... geographic variables to segment on
 #'
+#'
+#' @export
 #' @import data.table
 #'
 join_1col <- function(tbl,
@@ -80,6 +82,9 @@ join_1col <- function(tbl,
 #' Melt when one county has more than one race
 #' @param na_thresh if the proportion of NAs in a combination of \env{idvars} is more than \env{na_thresh}, then
 #' we say that this precinct did not have that member running
+#'
+#'
+#' @export
 melt_office <- function(tbl = df_wide,
                         pattern,
                         race = p_race,
@@ -135,6 +140,9 @@ melt_office <- function(tbl = df_wide,
 #' @param long a long dataset
 #' @param cand dataframe of candidates
 #' @param new_name a symbol to use for the new dataset
+#'
+#'
+#' @export
 #'
 join_office <- function(long, cand, new_name, ...) {
   cand_col <- quos(...)
