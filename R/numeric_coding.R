@@ -9,6 +9,8 @@
 #' @param cand A key that matches candidate names to parties
 #' @param ... geographic variables to segment on
 #'
+#' @import data.table
+#'
 join_1col <- function(tbl,
                       pattern,
                       race = p_race,
@@ -79,8 +81,8 @@ join_1col <- function(tbl,
 #' @param na_thresh if the proportion of NAs in a combination of \env{idvars} is more than \env{na_thresh}, then
 #' we say that this precinct did not have that member running
 melt_office <- function(tbl = df_wide,
-                        race = p_race,
                         pattern,
+                        race = p_race,
                         distname,
                         idvars = c("elec", "voter_id", "precinct_id", "ballot_style"),
                         na_thresh = 0.50) {
@@ -136,7 +138,6 @@ melt_office <- function(tbl = df_wide,
 #'
 join_office <- function(long, cand, new_name, ...) {
   cand_col <- quos(...)
-  cand_col_name <- quo_name(cand_col)
   new_name <- enquo(new_name)
   new_name <- quo_name(new_name)
   ncands_name <- glue("{new_name}_ncands")
