@@ -17,9 +17,6 @@ Depends:
     forcats,
     glue,
     noncensus
-Imports: 
-    foreach,
-    data.table
 Encoding: UTF-8
 RoxygenNote: 6.1.1
 LazyData: true
