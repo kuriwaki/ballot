@@ -6,9 +6,17 @@
 \usage{
 melt_office(tbl = df_wide, pattern, race = p_race, distname,
   idvars = c("elec", "voter_id", "precinct_id", "ballot_style"),
-  na_thresh = 0.5)
+  na_thresh = 0.8)
 }
 \arguments{
+\item{tbl}{data frame with votes for an office like US House}
+
+\item{pattern}{regex of vote columns to deal with}
+
+\item{distname}{character vector that indicates the district number indicator}
+
+\item{idvars}{a series of variables that is the unit for \env{na_thresh}}
+
 \item{na_thresh}{if the proportion of NAs in a combination of \env{idvars} is more than \env{na_thresh}, then
 we say that this precinct did not have that member running}
 }

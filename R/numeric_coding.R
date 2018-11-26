@@ -11,14 +11,14 @@
 #'
 #'
 #' @export
-#' @import data.table
+#' @importFrom data.table melt.data.table dcast.data.table as.data.table
 #'
 join_1col <- function(tbl,
                       pattern,
                       race = p_race,
                       new_name,
                       cand = NULL,
-                      na_thresh = 0.50,
+                      na_thresh = 0.80,
                       ...) {
   choice_col <- quos(...)
   new_name <- enquo(new_name)
@@ -46,10 +46,11 @@ join_1col <- function(tbl,
 
   # sometimes the abstentions are too much.. if so treat these as the race didn't happen
   v_by_p <- dcast(where_elec,
-                  as.formula(cast_form),
-                  value.var = "ballot_name",
-                  fun.aggregate = length) %>%
-    mutate(prop_NA = `NA`/rowSums(select(., -elec, -precinct_id, -ballot_style)))
+    as.formula(cast_form),
+    value.var = "ballot_name",
+    fun.aggregate = length
+  ) %>%
+    mutate(prop_NA = `NA` / rowSums(select(., -elec, -precinct_id, -ballot_style)))
 
   # keep only if proportion of NA is LESS than thresh
   where_elec <- semi_join(where_elec, filter(v_by_p, prop_NA < na_thresh))
@@ -80,6 +81,11 @@ join_1col <- function(tbl,
 
 
 #' Melt when one county has more than one race
+#'
+#' @param tbl data frame with votes for an office like US House
+#' @param pattern regex of vote columns to deal with
+#' @param distname character vector that indicates the district number indicator
+#' @param idvars a series of variables that is the unit for \env{na_thresh}
 #' @param na_thresh if the proportion of NAs in a combination of \env{idvars} is more than \env{na_thresh}, then
 #' we say that this precinct did not have that member running
 #'
@@ -90,7 +96,7 @@ melt_office <- function(tbl = df_wide,
                         race = p_race,
                         distname,
                         idvars = c("elec", "voter_id", "precinct_id", "ballot_style"),
-                        na_thresh = 0.50) {
+                        na_thresh = 0.80) {
   race_existence <- race %>%
     as.data.table() %>%
     melt.data.table(
@@ -106,7 +112,8 @@ melt_office <- function(tbl = df_wide,
       id.vars = idvars,
       measure.vars = patterns(pattern),
       value.name = "ballot_name",
-      variable.name = distname)
+      variable.name = distname
+    )
 
 
   # should delete most irrelevant races
@@ -116,10 +123,11 @@ melt_office <- function(tbl = df_wide,
 
   # sometimes the abstentions are too much.. if so treat these as the race didn't happen
   v_by_p <- dcast(where_elec,
-                  as.formula(cast_form),
-                  value.var = "ballot_name",
-                  fun.aggregate = length) %>%
-    mutate(prop_NA = `NA`/rowSums(select(., -elec, -precinct_id, -ballot_style, -matches(distname))))
+    as.formula(cast_form),
+    value.var = "ballot_name",
+    fun.aggregate = length
+  ) %>%
+    mutate(prop_NA = `NA` / rowSums(select(., -elec, -precinct_id, -ballot_style, -matches(distname))))
 
   where_elec <- semi_join(where_elec, filter(v_by_p, prop_NA < na_thresh))
 
@@ -149,6 +157,8 @@ join_office <- function(long, cand, new_name, ...) {
   new_name <- enquo(new_name)
   new_name <- quo_name(new_name)
   ncands_name <- glue("{new_name}_ncands")
+  cname_name <- glue("{new_name}_name")
+  cdist_name <- glue("{new_name}_dist")
 
   cand_party <- select(cand, elec, !!!cand_col, ballot_name, party_num) # given names
 
@@ -159,7 +169,13 @@ join_office <- function(long, cand, new_name, ...) {
     left_join(cand_party) %>%
     left_join(dist_count) %>%
     mutate(party_num = replace(party_num, is.na(party_num), 0)) %>%
-    select(elec, voter_id, !!!cand_col, !!new_name := party_num, !!ncands_name := num_in_dist)
+    select(
+      elec, voter_id,
+      !!!cand_col,
+      !!new_name := party_num,
+      !!ncands_name := num_in_dist,
+      !!cname_ame := ballot_name
+    )
 
   joined
 }

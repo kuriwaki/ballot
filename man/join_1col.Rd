@@ -5,7 +5,7 @@
 \title{Join with candidate data but single contest}
 \usage{
 join_1col(tbl, pattern, race = p_race, new_name, cand = NULL,
-  na_thresh = 0.5, ...)
+  na_thresh = 0.8, ...)
 }
 \arguments{
 \item{tbl}{A wide dataset with the contest}
