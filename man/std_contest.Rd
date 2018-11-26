@@ -14,10 +14,15 @@ Change a vector of contest names to o proper names with leading 7-character code
 }
 \examples{
 vec <- c(
-  "CON0001 House 1", "CONG007 House 7", "U. S. Senator",
+  "CON0001 House 1", "CONG007 House 7", "CONGR02 U.S. House of Rep Dist 2",
+  "CNG0003 U S House of Representatives Dis",
+  "CONO006 U S House of Rep Dist 6	",
+  "U S House of Rep Dist 6",
+  "CON02 U S House of Representatives Distr",
+  "CON0001 House 1", "CONG007 House 7",
+  "U. S. Senator",
   "President", "PREsident",
   "Straight Party",
-  "CON0001 House 1", "CONG007 House 7",
   "U. S. Senator", "CCNL001 Council 1",
   "CCNL001 Council 1", "CCD0001 Council 1"
 )

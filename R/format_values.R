@@ -6,14 +6,19 @@
 #'
 #' @export
 #'
-#' @import glue
+#' @importFrom glue glue
 #'
 #' @examples
 #' vec <- c(
-#'   "CON0001 House 1", "CONG007 House 7", "U. S. Senator",
+#'   "CON0001 House 1", "CONG007 House 7", "CONGR02 U.S. House of Rep Dist 2",
+#'   "CNG0003 U S House of Representatives Dis",
+#'   "CONO006 U S House of Rep Dist 6	",
+#'   "U S House of Rep Dist 6",
+#'   "CON02 U S House of Representatives Distr",
+#'   "CON0001 House 1", "CONG007 House 7",
+#'   "U. S. Senator",
 #'   "President", "PREsident",
 #'   "Straight Party",
-#'   "CON0001 House 1", "CONG007 House 7",
 #'   "U. S. Senator", "CCNL001 Council 1",
 #'   "CCNL001 Council 1", "CCD0001 Council 1"
 #' )
@@ -29,19 +34,20 @@ std_contest <- function(vec, .type = NULL) {
   )
 
   # Congress and President
-  ushou_ptrn1 <- "CON(G|G0|00|0)0"
-  ushou_ptrn2 <- "U\\.?S\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dist(|rict)\\s+" # one way a small minority show it
+  ush_p1 <- "CO?N(G|G0|G00|GR|O0|00|0)0"
+  ush_p2 <- "U\\s?\\.?S\\s?\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dist(|r|rict)\\s+" # one way a small minority show it
+  ush_p3 <- "C[A-Z0]+"
 
   regex_natnl <- tribble(
     ~pattern, ~replace,
     "President.*", "PRS0000 President",
-    suppressWarnings(glue("({ushou_ptrn1}1.*|{ushou_ptrn2}1)")), "USHOU01 US House SC-01",
-    suppressWarnings(glue("({ushou_ptrn1}2.*|{ushou_ptrn2}2)")), "USHOU02 US House SC-02",
-    suppressWarnings(glue("({ushou_ptrn1}3.*|{ushou_ptrn2}3)")), "USHOU03 US House SC-03",
-    suppressWarnings(glue("({ushou_ptrn1}4.*|{ushou_ptrn2}4)")), "USHOU04 US House SC-04",
-    suppressWarnings(glue("({ushou_ptrn1}5.*|{ushou_ptrn2}5)")), "USHOU05 US House SC-05",
-    suppressWarnings(glue("({ushou_ptrn1}6.*|{ushou_ptrn2}6)")), "USHOU06 US House SC-06",
-    suppressWarnings(glue("({ushou_ptrn1}7.*|{ushou_ptrn2}7)")), "USHOU07 US House SC-07",
+    suppressWarnings(glue("({ush_p1}1.*|{ush_p2}1|{ush_p3}1\\s+{ush_p2}.*)")), "USHOU01 US House SC-01",
+    suppressWarnings(glue("({ush_p1}2.*|{ush_p2}2|{ush_p3}2\\s+{ush_p2}.*)")), "USHOU02 US House SC-02",
+    suppressWarnings(glue("({ush_p1}3.*|{ush_p2}3|{ush_p3}3\\s+{ush_p2}.*)")), "USHOU03 US House SC-03",
+    suppressWarnings(glue("({ush_p1}4.*|{ush_p2}4|{ush_p3}4\\s+{ush_p2}.*)")), "USHOU04 US House SC-04",
+    suppressWarnings(glue("({ush_p1}5.*|{ush_p2}5|{ush_p3}5\\s+{ush_p2}.*)")), "USHOU05 US House SC-05",
+    suppressWarnings(glue("({ush_p1}6.*|{ush_p2}6|{ush_p3}6\\s+{ush_p2}.*)")), "USHOU06 US House SC-06",
+    suppressWarnings(glue("({ush_p1}7.*|{ush_p2}7|{ush_p3}7\\s+{ush_p2}.*)")), "USHOU07 US House SC-07",
     "^(U\\.?\\s?S\\.?||UNITED STATES) Senat(e|or)$", "USSEN01 US Senator",
     "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired? Term\\)", "USSEN02 US Senator (Special)",
   )
