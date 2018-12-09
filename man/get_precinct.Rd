@@ -9,7 +9,8 @@ get_precinct(df, precinct_regex = "(RUN DATE|ELECTION ID:)")
 \arguments{
 \item{df}{a EL155 dataset, read through read_EL155}
 
-\item{precinct_regex}{regex to identify rows with precinct names}
+\item{precinct_regex}{regex to identify rows with precinct names. For
+2018-11-06, use \env{"PRECINCT (?!TOTAL)"}. Default should work in ohter cases.}
 }
 \value{
 A dataset keyed by precinct. start_id and end_id refer to the range of

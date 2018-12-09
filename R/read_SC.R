@@ -97,7 +97,8 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #' Thus the rows need to be ordered correctly.
 #'
 #' @param df a EL155 dataset, read through read_EL155
-#' @param precinct_regex regex to identify rows with precinct names
+#' @param precinct_regex regex to identify rows with precinct names. For
+#'  2018-11-06, use \env{"PRECINCT (?!TOTAL)"}. Default should work in ohter cases.
 #'
 #' @return A dataset keyed by precinct. start_id and end_id refer to the range of
 #' the precinct in terms of the row IDs in read_EL155 output. column `precinct` is
@@ -113,14 +114,14 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #'
 get_precinct <- function(df, precinct_regex = "(RUN DATE|ELECTION ID:)") {
   pfirst <- df %>%
-    filter(grepl("(RUN DATE|ELECTION ID:)", text, perl = TRUE)) %>%
+    filter(grepl(precinct_regex, text, perl = TRUE)) %>%
     distinct(text, .keep_all = TRUE)
 
   pfirst_range <- pfirst %>%
     mutate(
       precinct = gsub(".*(?=PRECINCT)", "", text, perl = TRUE),
       precinct = gsub("\\s+ELECTION ID: [0-9A-Z]+", "", precinct, perl = TRUE),
-      precinct = gsub("\\s+", " ", precinct, perl = TRUE)
+      precinct = str_squish(precinct)
     ) %>%
     mutate(
       precinct_id = 1:n(),
@@ -145,6 +146,8 @@ get_precinct <- function(df, precinct_regex = "(RUN DATE|ELECTION ID:)") {
 #' @param votes EL155 dataset of votes, product of read_EL155()
 #' @param pkey precinct key, product of get_precinct_range()
 #'
+#' @importFrom fuzzyjoin interval_inner_join
+#'
 #' @export
 #'
 #' @examples
@@ -154,6 +157,7 @@ get_precinct <- function(df, precinct_regex = "(RUN DATE|ELECTION ID:)") {
 #'
 add_precinct <- function(votes, pkey) {
   stopifnot(n_distinct(votes$county) == 1)
+
   pkey_append <- pkey %>%
     select(precinct, precinct_id, p_start_id, p_end_id) %>%
     tbl_df() %>%
@@ -166,16 +170,14 @@ add_precinct <- function(votes, pkey) {
       p_end_id = id
     )
 
-  wprecinct <- interval_left_join(votes, pkey_append, by = c("p_start_id", "p_end_id")) %>%
+  wprecinct <- interval_inner_join(votes, pkey_append, by = c("p_start_id", "p_end_id")) %>%
     select(-matches("p_(start|end)_id")) # no longer needed
-
-  # do a join-by-range with data.table
-  stopifnot(nrow(votes) == nrow(wprecinct))
 
   # now remove the headers -- since we now have precinct.
   # once we have precinct and asterisk, rows are identifiable
   wprecinct <- wprecinct %>%
     filter(!grepl(".*ELECTION ID: [0-9+]", text)) %>%
+    filter(!grepl("\\s+PRECINCT", text)) %>%
     filter(!grepl("PRECINCT TOTALS", text)) %>%
     filter(!grepl("CANDIDATES RECEIVING A VOTE", text))
 
