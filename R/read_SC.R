@@ -65,8 +65,6 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
     ) %>%
     select(id, county, text)
 
-
-
   # weird encoding
   valid <- raw %>%
     filter(!grepl("^\033", text)) %>% # beginnign
@@ -74,8 +72,6 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
   nrow(valid)
 
   nonempty <- valid %>% filter(str_length(text) > 0)
-  nrow(nonempty)
-
 
   # extract info before dropping metadata
   eID <- valid %>%
@@ -108,9 +104,9 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #' @export
 #'
 #' @examples
-#' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-#' ald_p <- get_precinct(allendale)
-#' wprecinct <- add_precinct(allendale, ald_p)
+#' data(G2016_Dillon_EL155)
+#' dillon_p <- get_precinct(G2016_Dillon_EL155)
+#' wprecinct <- add_precinct(G2016_Dillon_EL155, dillon_p)
 get_precinct <- function(df) {
   pfirst <- df %>%
     filter(grepl("(RUN DATE|ELECTION ID:)", text, perl = TRUE)) %>%
@@ -146,10 +142,12 @@ get_precinct <- function(df) {
 #' @param pkey precinct key, product of get_precinct_range()
 #'
 #' @export
+#'
 #' @examples
-#' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-#' ald_p <- get_precinct_range(allendale)
-#' wprecinct <- add_precinct(allendale, ald_p)
+#' data(G2016_Dillon_EL155)
+#' dillon_p <- get_precinct(G2016_Dillon_EL155)
+#' wprecinct <- add_precinct(G2016_Dillon_EL155, dillon_p)
+#'
 add_precinct <- function(votes, pkey) {
   stopifnot(n_distinct(votes$county) == 1)
   pkey_append <- pkey %>%
@@ -198,9 +196,9 @@ add_precinct <- function(votes, pkey) {
 #' @import stringr purrr readr
 #'
 #' @examples
-#' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-#' ald_p <- get_precinct_range(allendale)
-#' wprecinct <- add_precinct(allendale, ald_p)
+#' data(G2016_Dillon_EL155)
+#' dillon_p <- get_precinct(G2016_Dillon_EL155)
+#' wprecinct <- add_precinct(G2016_Dillon_EL155, dillon_p)
 #' df <- parse_EL155(wprecinct)
 parse_EL155 <-
   function(votes, vote_col = "text",

@@ -16,7 +16,8 @@ Use the non-equi join in data.table to identify precinct. row i is in
 precinct j if i's ID is in between p_start_id and p_end_id of precint j.
 }
 \examples{
-allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-ald_p <- get_precinct_range(allendale)
-wprecinct <- add_precinct(allendale, ald_p)
+data(G2016_Dillon_EL155)
+dillon_p <- get_precinct(G2016_Dillon_EL155)
+wprecinct <- add_precinct(G2016_Dillon_EL155, dillon_p)
+
 }

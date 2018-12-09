@@ -20,7 +20,7 @@ Get a precinct-level dataset by using dplyr::distinct(.keep_all = TRUE).
 Thus the rows need to be ordered correctly.
 }
 \examples{
-allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
-ald_p <- get_precinct(allendale)
-wprecinct <- add_precinct(allendale, ald_p)
+data(G2016_Dillon_EL155)
+dillon_p <- get_precinct(G2016_Dillon_EL155)
+wprecinct <- add_precinct(G2016_Dillon_EL155, dillon_p)
 }
