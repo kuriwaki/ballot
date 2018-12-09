@@ -58,6 +58,7 @@ read_format_EL155 <- function(paths) {
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
+                       cname,
                        precinct_regex = "(RUN DATE|ELECTION ID:)") {
   raw <- tibble(text = suppressWarnings(read_lines(path))) %>%
     mutate(
