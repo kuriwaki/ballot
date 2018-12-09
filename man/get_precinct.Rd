@@ -4,10 +4,12 @@
 \alias{get_precinct}
 \title{Extract precinct-identifying information}
 \usage{
-get_precinct(df)
+get_precinct(df, precinct_regex = "(RUN DATE|ELECTION ID:)")
 }
 \arguments{
 \item{df}{a EL155 dataset, read through read_EL155}
+
+\item{precinct_regex}{regex to identify rows with precinct names}
 }
 \value{
 A dataset keyed by precinct. start_id and end_id refer to the range of
@@ -23,4 +25,5 @@ Thus the rows need to be ordered correctly.
 data(G2016_Dillon_EL155)
 dillon_p <- get_precinct(G2016_Dillon_EL155)
 wprecinct <- add_precinct(G2016_Dillon_EL155, dillon_p)
+
 }

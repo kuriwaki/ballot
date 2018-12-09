@@ -51,13 +51,15 @@ read_format_EL155 <- function(paths) {
 #'
 #' @param path path to raw file
 #' @param cname county name
+#' @param precinct_regex regex that identifies precinct (a data row)
 #'
 #' @export
 #'
 #' @examples
 #' allendale <- read_EL155("build/input/SC_2010Gen/Allendale/EL155", "Allendale")
 read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
-                       cname = "Allendale") {
+                       cname = "Allendale",
+                       precinct_regex = "(RUN DATE|ELECTION ID:)") {
   raw <- tibble(text = suppressWarnings(read_lines(path))) %>%
     mutate(
       id = 1:n(),
@@ -86,7 +88,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
   cat(glue::glue("{cname} (code {eID}) with {n_precincts} precincts, "), "\n")
 
   nonempty %>%
-    filter(str_detect(text, "^[0-9]{7}\\s+") | str_detect(text, "(RUN DATE|ELECTION ID:)"))
+    filter(str_detect(text, "^[0-9]{7}\\s+") | str_detect(text, precinct_regex))
 }
 
 #' Extract precinct-identifying information
@@ -95,6 +97,7 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #' Thus the rows need to be ordered correctly.
 #'
 #' @param df a EL155 dataset, read through read_EL155
+#' @param precinct_regex regex to identify rows with precinct names
 #'
 #' @return A dataset keyed by precinct. start_id and end_id refer to the range of
 #' the precinct in terms of the row IDs in read_EL155 output. column `precinct` is
@@ -107,7 +110,8 @@ read_EL155 <- function(path = "build/input/SC_2010Gen/Allendale/EL155",
 #' data(G2016_Dillon_EL155)
 #' dillon_p <- get_precinct(G2016_Dillon_EL155)
 #' wprecinct <- add_precinct(G2016_Dillon_EL155, dillon_p)
-get_precinct <- function(df) {
+#'
+get_precinct <- function(df, precinct_regex = "(RUN DATE|ELECTION ID:)") {
   pfirst <- df %>%
     filter(grepl("(RUN DATE|ELECTION ID:)", text, perl = TRUE)) %>%
     distinct(text, .keep_all = TRUE)

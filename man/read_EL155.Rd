@@ -5,12 +5,14 @@
 \title{Read a EL155 file}
 \usage{
 read_EL155(path = "build/input/SC_2010Gen/Allendale/EL155",
-  cname = "Allendale")
+  cname = "Allendale", precinct_regex = "(RUN DATE|ELECTION ID:)")
 }
 \arguments{
 \item{path}{path to raw file}
 
 \item{cname}{county name}
+
+\item{precinct_regex}{regex that identifies precinct (a data row)}
 }
 \description{
 Read a EL155 file
