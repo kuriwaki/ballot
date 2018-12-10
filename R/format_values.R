@@ -13,14 +13,32 @@
 #'   "CON0001 House 1", "CONG007 House 7", "CONGR02 U.S. House of Rep Dist 2",
 #'   "CNG0003 U S House of Representatives Dis",
 #'   "CONO006 U S House of Rep Dist 6	",
+#'   "US House of Representatives Dist 2",
 #'   "U S House of Rep Dist 6",
 #'   "CON02 U S House of Representatives Distr",
 #'   "CON0001 House 1", "CONG007 House 7",
+#'   "Auditor", "State Treasurer", "Adjutant General", "Straight Party",
+#'   "HSE0118 State House of Representatives D",
+#'   "HSE0124 State House of Representatives D",
+#'   "CCNL001 Council 1",
+#'   "CCD0001 Council 1",
+#'   "CCNL001 Council 1",
+#'   "CCD4 County Council District 4",
+#'   "CCD10 County Council District 10",
+#'   "CCD11 County Council District 11",
+#'   "PSD4 HH#1 Public Service District Subdis",
+#'   "MAY3 Town of Hilton Head Island Mayor", "MUN7 Beaufort City Council City of Beauf",
+#'   "SBD5 County School Board District 5",
+#'   "Governor", "Lt Governor",
+#'   "Attorney General", "Secretary of State", "SOIL & WATER COMMISSION",
+#'   "State Superintendent of Education", "US Senate",
+#'   "Comptroller General",
+#'   "Commissioner of Agriculture",
+#'   "Treasurer", "Sheriff", "Probate Judge",
 #'   "U. S. Senator",
 #'   "President", "PREsident",
 #'   "Straight Party",
-#'   "U. S. Senator", "CCNL001 Council 1",
-#'   "CCNL001 Council 1", "CCD0001 Council 1"
+#'   "U. S. Senator"
 #' )
 #' std_contest(vec)
 std_contest <- function(vec, .type = NULL) {
@@ -72,7 +90,7 @@ std_contest <- function(vec, .type = NULL) {
   regex_stleg <- tribble(
     ~pattern, ~replace,
     "^HOU(S|(?=0[0-9][0-9]\\s))", "HOU0", # standardize HOUS to HOU0, standardize HOU078 (6 chars) to HOU0078
-    "^STH0(?=[0-9][0-9][0-9]\\s)", "HOU0", # STH notation, e.g. in Greenville 2010
+    "^(STH|HSE)0(?=[0-9][0-9][0-9]\\s)", "HOU0", # STH or HSE notation, e.g. in Greenville 2010
     "SEN(?=0[0-9][0-9]\\s)", "SEN0", # SEN028 to SEN0028
     "State Senate Dist(|rict)\\s(?=[0-9][0-9])", "SEN00"
   )
@@ -99,6 +117,8 @@ std_contest <- function(vec, .type = NULL) {
     "^C(CD|C0|NC(?=0)|OC(?=000))", "CCL", # standardize CCD/CC0... three character  to CCL
     "^C(CNL|NCL|OCL|OC(?=00[1-9]\\s)|YCL)", "CCL0", # standardize CCNL to CCL, and CC001 to CCL0
     "^COC(?=00[0-9][0-9])", "CCL",
+    "^CCL(?=[1-9]\\s)" ,"CCL000",
+    "^CCL(?=[1-9][0-9]\\s)", "CCL00",
     "(^CTYCN|^CCSCH(?=[0-9]+\\sCounty))", "CCL00", # change to CCL00
     "^CCLIST", "CCL000", # change to CCL000
     "County Supervisor", "CCS0000 County Supervisor",
@@ -109,6 +129,7 @@ std_contest <- function(vec, .type = NULL) {
     ~pattern, ~replace,
     "(^BOE|^SB(?=000[1-7]\\s)|^SB0(?=0[0-9][0-9][0-9]\\s))", "SCH", # SB0001 to SCH0001
     "^SB0(?=00[0-9][0-9]\\s)", "SCH0", # SCB0001 to SCH0001
+    "^SBD(?=[0-9]\\s)", "SCH000", # SBD4 to SBD0004
     "^SCH(|O)(?=0[0-9]\\s)", "SCH00", # SCH02 to SCH0002; SCHO02 to SCH0002
     "(Board of Education Chair|School Board Chairman)", "SCH0000 School Board Chair",
     "(School Board Trustee|School Board At Large)", "SCH0000 School Board At-Large", # McCormick is at-large, elects four
