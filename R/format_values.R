@@ -72,6 +72,7 @@ std_contest <- function(vec, .type = NULL) {
   regex_stleg <- tribble(
     ~pattern, ~replace,
     "^HOU(S|(?=0[0-9][0-9]\\s))", "HOU0", # standardize HOUS to HOU0, standardize HOU078 (6 chars) to HOU0078
+    "^STH0(?=[0-9][0-9][0-9]\\s)", "HOU0", # STH notation, e.g. in Greenville 2010
     "SEN(?=0[0-9][0-9]\\s)", "SEN0", # SEN028 to SEN0028
     "State Senate Dist(|rict)\\s(?=[0-9][0-9])", "SEN00"
   )
@@ -96,7 +97,8 @@ std_contest <- function(vec, .type = NULL) {
     ~pattern, ~replace,
     "County Council At( |-)Large", "CCL0000 County Coucil at Large",
     "^C(CD|C0|NC(?=0)|OC(?=000))", "CCL", # standardize CCD/CC0... three character  to CCL
-    "^C(CNL|NCL|OCL|OC(?=00[1-9])|YCL)", "CCL0", # standardize CCNL to CCL, and CC001 to CCL0
+    "^C(CNL|NCL|OCL|OC(?=00[1-9]\\s)|YCL)", "CCL0", # standardize CCNL to CCL, and CC001 to CCL0
+    "^COC(?=00[0-9][0-9])", "CCL",
     "(^CTYCN|^CCSCH(?=[0-9]+\\sCounty))", "CCL00", # change to CCL00
     "^CCLIST", "CCL000", # change to CCL000
     "County Supervisor", "CCS0000 County Supervisor",
