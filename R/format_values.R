@@ -35,8 +35,8 @@ std_contest <- function(vec, .type = NULL) {
 
   # Congress and President
   ush_p1 <- "CO?N(G|G0|G00|GR|O0|00|0)0"
-  ush_p2 <- "U\\s?\\.?S\\s?\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dist(|r|rict)\\s+" # one way a small minority show it
-  ush_p3 <- "C[A-Z0]+"
+  ush_p2 <- "U\\s?\\.?S\\s?\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dis(|t|tr|trict)\\s?" # one way a small minority show it
+  ush_p3 <- "(C[A-Z0]+|UDIST)"
 
   regex_natnl <- tribble(
     ~pattern, ~replace,
