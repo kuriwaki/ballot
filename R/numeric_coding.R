@@ -158,7 +158,6 @@ join_office <- function(long, cand, new_name, ...) {
   new_name <- quo_name(new_name)
   ncands_name <- glue("{new_name}_ncands")
   cname_name <- glue("{new_name}_name")
-  cdist_name <- glue("{new_name}_dist")
 
   cand_party <- select(cand, elec, !!!cand_col, ballot_name, party_num) # given names
 
@@ -174,7 +173,7 @@ join_office <- function(long, cand, new_name, ...) {
       !!!cand_col,
       !!new_name := party_num,
       !!ncands_name := num_in_dist,
-      !!cname_ame := ballot_name
+      !!cname_name := ballot_name
     )
 
   joined
