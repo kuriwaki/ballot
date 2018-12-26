@@ -18,7 +18,9 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8) {
   where_elec <- semi_join(tbl, race_existence, by = c("elec", "precinct_id", "ballot_style")) %>%
     select(elec, precinct_id, ballot_style, voter_id, matches(pattern))
 
+  # record variable which has votes
   contest_name <- colnames(where_elec)[length(where_elec)]
+  stopifnot(contest_name != "voter_id")
 
   # sometimes the abstentions are too much.. if so treat these as the race didn't happen
   missings <- where_elec %>%
