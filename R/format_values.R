@@ -113,14 +113,14 @@ std_contest <- function(vec, .type = NULL) {
 
   regex_ctcnl <- tribble(
     ~pattern, ~replace,
-    "County Council At( |-)Large", "CCL0000 County Coucil at Large",
-    "^C(CD|C0|NC(?=0)|OC(?=000))", "CCL", # standardize CCD/CC0... three character  to CCL
-    "^C(CNL|NCL|OCL|OC(?=00[1-9]\\s)|YCL)", "CCL0", # standardize CCNL to CCL, and CC001 to CCL0
-    "^COC(?=00[0-9][0-9])", "CCL",
-    "^CCL(?=[1-9]\\s)" ,"CCL000",
-    "^CCL(?=[1-9][0-9]\\s)", "CCL00",
-    "(^CTYCN|^CCSCH(?=[0-9]+\\sCounty))", "CCL00", # change to CCL00
-    "^CCLIST", "CCL000", # change to CCL000
+    "County Council At( |-)Large", "CCA0000 County Coucil at Large",
+    "^C(CD|C0|NC(?=0)|OC(?=000))", "CCD", # standardize CCD/CC0... three character  to CCL
+    "^C(CNL|NCL|OCL|OC(?=00[1-9]\\s)|YCL)", "CCD0", # standardize CCNL to CCD, and CC001 to CCD0
+    "^COC(?=00[0-9][0-9])", "CCD",
+    "^CCL(?=[1-9]\\s)" ,"CCD000",
+    "^CCL(?=[1-9][0-9]\\s)", "CCD00",
+    "(^CTYCN|^CCSCH(?=[0-9]+\\sCounty))", "CCD00", # change to CCL00
+    "^CCLIST", "CCD000", # change to CCL000
     "County Supervisor", "CCS0000 County Supervisor",
     "County Manager", "CCM0000 County Manager"
   )
