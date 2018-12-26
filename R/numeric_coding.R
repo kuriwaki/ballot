@@ -28,7 +28,7 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8) {
     summarize(prop_na = mean(is.na(.data[[contest_name]]))) %>%
     ungroup()
 
-  cat(glue("missings: {inline_hist(missings$prop_na)}, deleting where prop_na >= 0.8"), "\n")
+  cat(glue("missings: {inline_hist(missings$prop_na)}, deleting where NA proportion >= {na_thresh}"), "\n")
 
   exist_2 <- filter(missings, prop_na < na_thresh)
 
