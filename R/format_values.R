@@ -238,6 +238,7 @@ std_sc_first <- function(vec, use, code_regex, code_replace) {
 std_yes_no <- function(vec) {
   vec %>%
     str_replace(regex("(?<!^W/I).*Favor.*", ignore_case = TRUE), "Yes") %>%
+    str_replace(regex("No, .*", ignore_case = TRUE), "No") %>%
     str_replace(regex("(?<!^W/I).*Opposed.*", ignore_case = TRUE), "No")
 }
 
