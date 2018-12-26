@@ -1,31 +1,10 @@
 
-#' Join with candidate data but single contest
-#'
-#' For example, used for referenda where there is only one "seat"
-#' @param tbl A wide dataset with the contest
-#' @param pattern regex to mark that race
-#' @param p_race A separate dataset that indicates the number of votes cast for
-#' a contest code in a particular geography
-#' @param cand A key that matches candidate names to parties
-#' @param ... geographic variables to segment on
-#'
-#'
-#' @export
-#' @importFrom data.table melt.data.table dcast.data.table as.data.table
-#'
-join_1col <- function(tbl,
-                      pattern,
-                      race = p_race,
-                      new_name,
-                      cand = NULL,
-                      na_thresh = 0.80,
-                      ...) {
-  choice_col <- quos(...)
-  new_name <- enquo(new_name)
-  new_name <- quo_name(new_name)
-  nchoice_name <- glue("{new_name}_nchoice")
-
-  # existence of the races matched by pattern
+#' Filter down a long dataset to precinct-ballot style combinations for which
+#' that contest race exists. Otherwise, observation is dropped
+#' @param tbl dataset
+#' @param pattern regex to identify the race. Must resolve to one variable
+#' @param race tabulation of votes
+filter_existing <- function(tbl, pattern, race, na_thresh = 0.8) {
   race_existence <- race %>%
     as.data.table() %>%
     melt.data.table(
@@ -35,46 +14,63 @@ join_1col <- function(tbl,
     ) %>%
     filter(value > 0)
 
-  long <- select(tbl, elec, precinct_id, ballot_style, voter_id, !!!choice_col, matches(pattern))
-  colnames(long)[ncol(long)] <- "ballot_name"
-
   # should delete most irrelevant races
-  where_elec <- semi_join(long, race_existence)
+  where_elec <- semi_join(tbl, race_existence, by = c("elec", "precinct_id", "ballot_style")) %>%
+    select(elec, precinct_id, ballot_style, voter_id, matches(pattern))
 
-  cast_form <- glue("elec + precinct_id + ballot_style ~ ballot_name")
-
+  contest_name <- colnames(where_elec)[length(where_elec)]
 
   # sometimes the abstentions are too much.. if so treat these as the race didn't happen
-  v_by_p <- dcast(where_elec,
-    as.formula(cast_form),
-    value.var = "ballot_name",
-    fun.aggregate = length
-  ) %>%
-    mutate(prop_NA = `NA` / rowSums(select(., -elec, -precinct_id, -ballot_style)))
+  missings <- where_elec %>%
+    group_by(elec, precinct_id, ballot_style) %>%
+    summarize(prop_na = mean(is.na(.data[[contest_name]]))) %>%
+    ungroup()
 
-  # keep only if proportion of NA is LESS than thresh
-  where_elec <- semi_join(where_elec, filter(v_by_p, prop_NA < na_thresh))
+  cat(glue("missings: {inline_hist(missings$prop_na)}, deleting where prop_na >= 0.8"), "\n")
+
+  exist_2 <- filter(missings, prop_na < na_thresh)
+
+  semi_join(where_elec, exist_2, by = c("elec", "precinct_id", "ballot_style"))
+}
+
+
+
+
+#' Join with candidate data with single district identifier
+#'
+#' For example, used for referenda where there is only one "seat"
+#' @param tbl A wide dataset with the contest
+#' @param pattern regex to mark that race
+#' @param type NSE code for the contest. Will also be used to filter \env{cand} if not null.
+#' @param p_race A separate dataset that indicates the number of votes cast for
+#' a contest code in a particular geography
+#' @param cand A key that matches candidate names to parties
+#' @param ... geographic variables to segment on
+#'
+#'
+#' @export
+#'
+join_1col <- function(tbl,
+                      pattern,
+                      cand,
+                      new_name,
+                      ...) {
+  choice_col <- quos(...)
+  new_var <- enquo(new_name)
+  new_name <- quo_name(new_var)
+  nchoice_name <- glue("{new_name}_nchoice")
 
   # if this is a candidate race, like sherrif
-  if (!is.null(cand)) {
+    cand <- filter(cand, contest_type == new_name) # only relevant type
     cand_counts <- count(cand, elec, !!!choice_col) %>%
-      rename(num_in_dist = n)
+      rename(!!nchoice_name := n)
 
     # join relevant precinct voters and candidate
-    joined <- where_elec %>%
+    joined <- tbl %>%
       left_join(cand) %>%
-      left_join(cand_counts) %>%
-      mutate(party_num = replace(party_num, !is.na(num_in_dist) & is.na(party_num), 0)) %>%
-      select(elec, voter_id, !!new_name := party_num, !!ncands_name := num_in_dist)
-  }
-
-  # if this is a referendum race
-  if (is.null(cand)) {
-    joined <- where_elec %>%
-      mutate(vote_num = recode(ballot_name, `Yes` = -1, `No` = 1, .default = 0)) %>%
-      mutate(vote_num = replace(vote_num, is.na(vote_num), 0)) %>%
-      select(elec, voter_id, !!new_name := vote_num)
-  }
+      left_join(cand_counts, by = setdiff(colnames(cand_counts), nchoice_name)) %>%
+      mutate(party_num = replace(party_num, !is.na(.data[[nchoice_name]]) & is.na(party_num), 0)) %>%
+      select(elec, voter_id,  !!!choice_col, !!new_name := party_num, !!nchoice_name)
 
   joined
 }
@@ -97,24 +93,6 @@ melt_office <- function(tbl = df_wide,
                         distname,
                         idvars = c("elec", "voter_id", "precinct_id", "ballot_style"),
                         na_thresh = 0.80) {
-  race_existence <- race %>%
-    as.data.table() %>%
-    melt.data.table(
-      id.vars = c("elec", "precinct_id", "ballot_style"),
-      measure.vars = patterns(pattern),
-      variable.name = distname
-    ) %>%
-    filter(value > 0)
-
-  long <- tbl %>%
-    as.data.table() %>%
-    melt.data.table(
-      id.vars = idvars,
-      measure.vars = patterns(pattern),
-      value.name = "ballot_name",
-      variable.name = distname
-    )
-
 
   # should delete most irrelevant races
   where_elec <- semi_join(long, race_existence)
