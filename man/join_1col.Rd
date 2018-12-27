@@ -2,22 +2,18 @@
 % Please edit documentation in R/numeric_coding.R
 \name{join_1col}
 \alias{join_1col}
-\title{Join with candidate data but single contest}
+\title{Join with candidate data with single district identifier}
 \usage{
-join_1col(tbl, pattern, race = p_race, new_name, cand = NULL,
-  na_thresh = 0.8, ...)
+join_1col(tbl, cand, vote_col, join_cols_tbl, join_cols_cand)
 }
 \arguments{
 \item{tbl}{A wide dataset with the contest}
 
-\item{pattern}{regex to mark that race}
+\item{join_col}{NSE code to indicate variable that is being joined (to ballot_name in cands)}
 
-\item{cand}{A key that matches candidate names to parties}
+\item{type}{NSE code for the contest. Will also be used to filter \env{cand} if not null.}
 
 \item{...}{geographic variables to segment on}
-
-\item{p_race}{A separate dataset that indicates the number of votes cast for
-a contest code in a particular geography}
 }
 \description{
 For example, used for referenda where there is only one "seat"

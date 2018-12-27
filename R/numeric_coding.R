@@ -82,12 +82,17 @@ join_1col <- function(tbl,
   joined
 }
 
-#' Join by a single district identifier (congerss, state hosue)
+#' Join by a single district identifier (congerss, state hosue) or county
+#'
+#' Calls \link{join_1col} internally
+#'
 #' @param tbl variables must be of the type '{office}_{vote}', '{office}_{dist}' (if dist) and
 #' county
 #' for vote name and district, respectively.
 #' @param cands A table of candidates. Must have variables \code{elec}, \code{dist},
 #' \code{county}, \code{ballot_name}, \code{party_num}, \code{contest_type}
+#' @param office NSE short form of the office in question
+#' @export
 
 join_dist <- function(tbl, cands, office) {
   office_var <- enquo(office)
@@ -95,30 +100,43 @@ join_dist <- function(tbl, cands, office) {
 
   cands_office <- filter(cands, contest_type == office_name)
 
-  vote_name <- glue("{office_name}_vote")
   join_name <- glue("{office_name}_dist")
+
+  vote_name <- glue("{office_name}_vote")
+  vote_party_name <- glue("{office_name}_party")
+  vote_ncand_name <- glue("{office_name}_ncand")
+
 
   join_1col(tbl, cands_office,
             vote_col = !!vote_name,
             join_cols_tbl = !!join_name,
             join_cols_cand = dist) %>%
-
+    rename(!!vote_party_name := party_num,
+           !!vote_ncand_name := n)
 }
 
 #' @rdname join_dist
+#' @export
 join_county <- function(tbl, cands, office) {
   office_var <- enquo(office)
   office_name <- quo_name(office_var)
 
   cands_office <- filter(cands, contest_type == office_name)
 
-  vote_name <- glue("{office_name}0000")
   join_name <- "county"
+
+  vote_name <- glue("{office_name}0000")
+  vote_party_name <- glue("{office_name}_party")
+  vote_ncand_name <- glue("{office_name}_ncand")
+  vote_name2_name <- glue("{office_name}_vote")
 
   join_1col(tbl, cands_office,
             vote_col = !!vote_name,
             join_cols_tbl = !!join_name,
-            join_cols_cand = county)
+            join_cols_cand = county) %>%
+    rename(!!vote_name2_name := !!vote_name,
+           !!vote_party_name := party_num,
+           !!vote_ncand_name := n)
 }
 
 
