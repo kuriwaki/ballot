@@ -42,40 +42,85 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8) {
 #'
 #' For example, used for referenda where there is only one "seat"
 #' @param tbl A wide dataset with the contest
-#' @param pattern regex to mark that race
+#' @param join_col NSE code to indicate variable that is being joined (to ballot_name in cands)
 #' @param type NSE code for the contest. Will also be used to filter \env{cand} if not null.
-#' @param p_race A separate dataset that indicates the number of votes cast for
-#' a contest code in a particular geography
-#' @param cand A key that matches candidate names to parties
 #' @param ... geographic variables to segment on
 #'
 #'
 #' @export
 #'
 join_1col <- function(tbl,
-                      pattern,
                       cand,
-                      new_name,
-                      ...) {
-  choice_col <- quos(...)
-  new_var <- enquo(new_name)
-  new_name <- quo_name(new_var)
-  nchoice_name <- glue("{new_name}_nchoice")
+                      vote_col,
+                      join_cols_tbl,
+                      join_cols_cand
+                      ) {
+  vote_col <- enquo(vote_col)
+  vote_name <- quo_name(vote_col)
 
-  # if this is a candidate race, like sherrif
-    cand <- filter(cand, contest_type == new_name) # only relevant type
-    cand_counts <- count(cand, elec, !!!choice_col) %>%
-      rename(!!nchoice_name := n)
+  join_cols_tbl <- enquo(join_cols_tbl)
+  join_name_tbl <- quo_name(join_cols_tbl)
+
+  join_cols_cand <- enquo(join_cols_cand)
+  join_name_cand <- quo_name(join_cols_cand)
+
+
+  # add counts
+    cand <- cand %>%
+      left_join(
+        count(cand, elec, !!join_cols_cand)
+      ) %>%
+      rename(!!join_name_tbl := !!join_name_cand,
+             !!vote_name := ballot_name)
 
     # join relevant precinct voters and candidate
     joined <- tbl %>%
-      left_join(cand) %>%
-      left_join(cand_counts, by = setdiff(colnames(cand_counts), nchoice_name)) %>%
-      mutate(party_num = replace(party_num, !is.na(.data[[nchoice_name]]) & is.na(party_num), 0)) %>%
-      select(elec, voter_id,  !!!choice_col, !!new_name := party_num, !!nchoice_name)
+      left_join(cand, by = c("elec", join_name_tbl, vote_name)) %>% # join to candidate party
+      mutate(party_num = replace(party_num, !is.na(n) & is.na(party_num), 0)) %>%
+      select(elec, voter_id, !!vote_col,  !!join_cols_tbl, party_num, n)
 
   joined
 }
+
+#' Join by a single district identifier (congerss, state hosue)
+#' @param tbl variables must be of the type '{office}_{vote}', '{office}_{dist}' (if dist) and
+#' county
+#' for vote name and district, respectively.
+#' @param cands A table of candidates. Must have variables \code{elec}, \code{dist},
+#' \code{county}, \code{ballot_name}, \code{party_num}, \code{contest_type}
+
+join_dist <- function(tbl, cands, office) {
+  office_var <- enquo(office)
+  office_name <- quo_name(office_var)
+
+  cands_office <- filter(cands, contest_type == office_name)
+
+  vote_name <- glue("{office_name}_vote")
+  join_name <- glue("{office_name}_dist")
+
+  join_1col(tbl, cands_office,
+            vote_col = !!vote_name,
+            join_cols_tbl = !!join_name,
+            join_cols_cand = dist) %>%
+
+}
+
+#' @rdname join_dist
+join_county <- function(tbl, cands, office) {
+  office_var <- enquo(office)
+  office_name <- quo_name(office_var)
+
+  cands_office <- filter(cands, contest_type == office_name)
+
+  vote_name <- glue("{office_name}0000")
+  join_name <- "county"
+
+  join_1col(tbl, cands_office,
+            vote_col = !!vote_name,
+            join_cols_tbl = !!join_name,
+            join_cols_cand = county)
+}
+
 
 
 #' Melt when one county has more than one race
