@@ -4,6 +4,10 @@
 #' @param tbl dataset
 #' @param pattern regex to identify the race. Must resolve to one variable
 #' @param race tabulation of votes
+#'
+#'
+#' @export
+#'
 filter_existing <- function(tbl, pattern, race, na_thresh = 0.8) {
   race_existence <- race %>%
     as.data.table() %>%

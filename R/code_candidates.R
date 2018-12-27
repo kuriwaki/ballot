@@ -5,6 +5,7 @@
 #' @param tbl wide table with columns like \env{GOV0000}.
 #' @param year year of general election
 #'
+#' @export
 stwide_to_numeric <- function(tbl, year) {
 
   # 2010
