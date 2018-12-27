@@ -7,6 +7,7 @@
 #' @export
 #'
 #' @importFrom glue glue
+#' @importFrom stringr str_replace_all
 #'
 #' @examples
 #' vec <- c(

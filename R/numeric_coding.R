@@ -7,6 +7,7 @@
 #' @param na_thresh how much NAs can is still a abstention?
 #' @param gtbl join with a table with more district information like county.
 #'
+#' @importFrom skimr inline_hist
 #'
 #' @export
 #'
