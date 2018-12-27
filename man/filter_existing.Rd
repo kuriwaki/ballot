@@ -5,7 +5,7 @@
 \title{Filter down a long dataset to precinct-ballot style combinations for which
 that contest race exists. Otherwise, observation is dropped}
 \usage{
-filter_existing(tbl, pattern, race, na_thresh = 0.8)
+filter_existing(tbl, pattern, race, na_thresh = 0.8, gtbl = NULL)
 }
 \arguments{
 \item{tbl}{dataset}
@@ -13,6 +13,10 @@ filter_existing(tbl, pattern, race, na_thresh = 0.8)
 \item{pattern}{regex to identify the race. Must resolve to one variable}
 
 \item{race}{tabulation of votes}
+
+\item{na_thresh}{how much NAs can is still a abstention?}
+
+\item{gtbl}{join with a table with more district information like county.}
 }
 \description{
 Filter down a long dataset to precinct-ballot style combinations for which

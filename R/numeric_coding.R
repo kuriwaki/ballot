@@ -4,11 +4,13 @@
 #' @param tbl dataset
 #' @param pattern regex to identify the race. Must resolve to one variable
 #' @param race tabulation of votes
+#' @param na_thresh how much NAs can is still a abstention?
+#' @param gtbl join with a table with more district information like county.
 #'
 #'
 #' @export
 #'
-filter_existing <- function(tbl, pattern, race, na_thresh = 0.8) {
+filter_existing <- function(tbl, pattern, race, na_thresh = 0.8, gtbl = NULL) {
   race_existence <- race %>%
     as.data.table() %>%
     melt.data.table(
@@ -36,7 +38,13 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8) {
 
   exist_2 <- filter(missings, prop_na < na_thresh)
 
-  semi_join(where_elec, exist_2, by = c("elec", "precinct_id", "ballot_style"))
+  out <- semi_join(where_elec, exist_2, by = c("elec", "precinct_id", "ballot_style"))
+
+  if (is.null(gtbl))
+    return(out)
+
+  if (!is.null(gtbl))
+    inner_join(geo_wide, out)
 }
 
 
