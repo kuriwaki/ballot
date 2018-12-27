@@ -105,7 +105,7 @@ std_contest <- function(vec, .type = NULL) {
     "^Sheriff", "SHF0000 Sheriff",
     "^Probate Judge", "JPRB000 Probate Judge",
     "(County )?Clerk of Cour(t|)", "CLR0000 Clerk of Court",
-    "County Council Chair", "CCL0000 County Coucil Chair",
+    "County Council Chair", "CCC0000 County Coucil Chair",
     "Register of Deeds", "RGD0000 Register of Deeds",
     "Register of Mesne Convey(a|e)nce", "RMC0000 Register of Mesne Conveyance",
   )
@@ -119,7 +119,7 @@ std_contest <- function(vec, .type = NULL) {
     "^COC(?=00[0-9][0-9])", "CCD",
     "^CCL(?=[1-9]\\s)" ,"CCD000",
     "^CCL(?=[1-9][0-9]\\s)", "CCD00",
-    "(^CTYCN|^CCSCH(?=[0-9]+\\sCounty))", "CCD00", # change to CCL00
+    "(^CTYCN|^CCSCH(?=[0-9]+\\sCounty))", "CCD00", # change to CCD00
     "^CCLIST", "CCD000", # change to CCL000
     "County Supervisor", "CCS0000 County Supervisor",
     "County Manager", "CCM0000 County Manager"
@@ -240,6 +240,18 @@ std_yes_no <- function(vec) {
     str_replace(regex("(?<!^W/I).*Favor.*", ignore_case = TRUE), "Yes") %>%
     str_replace(regex("No, .*", ignore_case = TRUE), "No") %>%
     str_replace(regex("(?<!^W/I).*Opposed.*", ignore_case = TRUE), "No")
+}
+
+#' Standardize Yes / No / NA to -1, 1, 0.
+#'
+#' @param vec long values of Yes/Nos Must have been passed through filter_existing,
+#' otherwise all NAs are coded as 0s
+#'
+#' @export
+stdnum_yesno <- function(vec) {
+  numvec <- recode(vec, `Yes` = -1, `No` = 1, .missing = 0)
+  stopifnot(n_distinct(numvec) == 3)
+  numvec
 }
 
 
