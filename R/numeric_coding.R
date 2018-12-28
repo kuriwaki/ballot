@@ -35,7 +35,7 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8, gtbl = NULL) {
     summarize(prop_na = mean(is.na(.data[[contest_name]]))) %>%
     ungroup()
 
-  cat(glue("missings: {inline_hist(missings$prop_na)}, deleting where NA proportion >= {na_thresh}"), "\n")
+  cat(glue("missings: {skimr::inline_hist(missings$prop_na)}, deleting where NA proportion >= {na_thresh}"), "\n")
 
   exist_2 <- filter(missings, prop_na < na_thresh)
 
