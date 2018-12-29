@@ -19,6 +19,7 @@ vec <- c(
   "CONO006 U S House of Rep Dist 6	",
   "US House of Representatives Dist 2",
   "U S House of Rep Dist 6",
+  "U.S. House of Rep. Dist. 5",
   "CON02 U S House of Representatives Distr",
   "CON0001 House 1", "CONG007 House 7",
   "Auditor", "State Treasurer", "Adjutant General", "Straight Party",

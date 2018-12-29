@@ -16,6 +16,7 @@
 #'   "CONO006 U S House of Rep Dist 6	",
 #'   "US House of Representatives Dist 2",
 #'   "U S House of Rep Dist 6",
+#'   "U.S. House of Rep. Dist. 5",
 #'   "CON02 U S House of Representatives Distr",
 #'   "CON0001 House 1", "CONG007 House 7",
 #'   "Auditor", "State Treasurer", "Adjutant General", "Straight Party",
@@ -54,7 +55,7 @@ std_contest <- function(vec, .type = NULL) {
 
   # Congress and President
   ush_p1 <- "CO?N(G|G0|G00|GR|O0|00|0)0"
-  ush_p2 <- "U\\s?\\.?S\\s?\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dis(|t|tr|trict)\\s?" # one way a small minority show it
+  ush_p2 <- "U\\s?\\.?S\\s?\\.?\\sHouse of Rep(|s|\\.|resentatives)\\s+Dis(|t|tr|trict)\\.?\\s?" # one way a small minority show it
   ush_p3 <- "(C[A-Z0]+|UDIST)"
 
   regex_natnl <- tribble(
