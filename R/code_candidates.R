@@ -52,6 +52,17 @@ stwide_to_numeric <- function(tbl, year) {
       )
   }
 
+  if (year == "2018") {
+    out <- tbl %>%
+      mutate(
+        GOV = recode(GOV0000, `Henry McMaster` = 1L, `James Smith` = -1L, .default = 0L, .missing = 0L),
+        ATG = recode(ATG0000, `Alan Wilson` = 1L, `Constance Anastopoulo` = -1L, .default = 0L, .missing = 0L),
+        SOS = recode(SOS0000, `Mark Hammond` = 1L, `Melvin T Whittenburg` = -1L, .default = 0L, .missing = 0L),
+        SSI = recode(SSI0000, `Molly Mitchell Spearman` = 1L, `Israel Romero` = -1L, .default = 0L, .missing = 0L)
+      )
+  }
+
+
   ## all years have party
   out <- out %>%
     mutate(
