@@ -9,10 +9,16 @@ cast_to_wide(df = raw, contests = c("PTY", "PRS", "USHOU", "USSEN",
   "CLR", "AUD", "CTRES", "CCL", "SCH", "JPRB", "WAT", "Q", "LRCA"))
 }
 \arguments{
-\item{contests}{A vector of contest_codes to select and put into the wide.}
+\item{df}{A standardized long dataset with contest_code and contest_name. Should
+have the variables \code{elec}, \code{county}, \code{contest_code}, \code{voter_id},,
+\code{precinct}, \code{precinct_id}.}
 
-\item{raw}{A standardized long dataset with contest_code and contest_name}
+\item{contests}{A vector of contest_codes to select and put into the wide.}
 }
 \description{
-This drops offices where multiple votes are cast for the same contest_code. Absentees are also dropped.
+This drops offices where multiple votes are cast for the same contest_code. This
+is necessary to make a voter uniquely identify a vote for a contest (column).
+Some offices like congress and state leg are separated out into district-name pairs,
+ with a specific column for a district and the vote in that corresponding district.
+Absentees are also dropped because they do not have precint information.
 }

@@ -1,9 +1,15 @@
 
 #' long voter-vote to voter-based data
 #'
-#' This drops offices where multiple votes are cast for the same contest_code. Absentees are also dropped.
+#' This drops offices where multiple votes are cast for the same contest_code. This
+#' is necessary to make a voter uniquely identify a vote for a contest (column).
+#' Some offices like congress and state leg are separated out into district-name pairs,
+#'  with a specific column for a district and the vote in that corresponding district.
+#' Absentees are also dropped because they do not have precint information.
 #'
-#' @param raw A standardized long dataset with contest_code and contest_name
+#' @param df A standardized long dataset with contest_code and contest_name. Should
+#' have the variables \code{elec}, \code{county}, \code{contest_code}, \code{voter_id},,
+#' \code{precinct}, \code{precinct_id}.
 #' @param contests A vector of contest_codes to select and put into the wide.
 #'
 #' @export
@@ -29,7 +35,7 @@ cast_to_wide <- function(df = raw,
 
   # Non-absentee precinct
   p_absentee <- df %>%
-    filter(str_detect(p_name, regex("(Absentee|Failsafe)", ignore_case = TRUE))) %>%
+    filter(str_detect(precinct, regex("(Absentee|Failsafe)", ignore_case = TRUE))) %>%
     distinct(precinct_id)
 
 
@@ -40,6 +46,7 @@ cast_to_wide <- function(df = raw,
   # separate columns for district
   dist_offices <- c("HOU", "SEN", "USHOU", "SOL")
 
+  # dist num in one office, candidates in another. For SMD
   dist_wide <- select_offices %>%
     filter(contest_type %in% dist_offices) %>%
     mutate(dist = as.integer(parse_number(contest_code))) %>%
@@ -51,10 +58,11 @@ cast_to_wide <- function(df = raw,
     tbl_df()
 
 
+  # other offices (use the 7-digit code on its own)
   df_wide_oth <- select_offices %>%
     filter(!contest_type %in% dist_offices) %>%
     as.data.table() %>%
-    dcast(elec + county + precinct_id + p_name + ballot_style + voter_id ~ contest_code, value.var = "choice_name") %>%
+    dcast(elec + county + precinct_id + precinct + ballot_style + voter_id ~ contest_code, value.var = "choice_name") %>%
     tbl_df()
 
   left_join(df_wide_oth, dist_wide, by = c("elec", "voter_id"))
