@@ -17,7 +17,7 @@
 cast_to_wide <- function(df = raw,
                          contests = c("PTY", "PRS", "USHOU", "USSEN", "GOV", "LGV", "SOS", "ATG", "SSI",
                                       "HOU", "SEN", "JPRB", "SHF", "COR", "CLR", "AUD",
-                                      "CTRES", "CCL", "SCH", "JPRB", "WAT", "Q", "LRCA")) {
+                                      "CTRES", "CCL","CCD", "CCA", "CCC", "SCH", "JPRB", "WAT", "Q", "LRCA")) {
 
   # slow
   office_votes <- count(df, elec, county, contest_code, voter_id) %>%

@@ -6,7 +6,8 @@
 \usage{
 cast_to_wide(df = raw, contests = c("PTY", "PRS", "USHOU", "USSEN",
   "GOV", "LGV", "SOS", "ATG", "SSI", "HOU", "SEN", "JPRB", "SHF", "COR",
-  "CLR", "AUD", "CTRES", "CCL", "SCH", "JPRB", "WAT", "Q", "LRCA"))
+  "CLR", "AUD", "CTRES", "CCL", "CCD", "CCA", "CCC", "SCH", "JPRB", "WAT",
+  "Q", "LRCA"))
 }
 \arguments{
 \item{df}{A standardized long dataset with contest_code and contest_name. Should
