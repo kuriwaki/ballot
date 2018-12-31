@@ -116,7 +116,8 @@ std_contest <- function(vec, .type = NULL) {
   regex_ctcnl <- tribble(
     ~pattern, ~replace,
     "County Council At( |-)Large", "CCA0000 County Coucil at Large",
-    "^C(CD|C0|NC(?=0)|OC(?=000))", "CCD", # standardize CCD/CC0... three character  to CCL
+    "^CCL(?=00[0-9][0-9])", "CCD", # general change CCL, CCD
+    "^C(CD|C0|NC(?=0)|OC(?=000))", "CCD", # standardize CCD/CC0... three character  to CCD
     "^C(CNL|NCL|OCL|OC(?=00[1-9]\\s)|YCL)", "CCD0", # standardize CCNL to CCD, and CC001 to CCD0
     "^COC(?=00[0-9][0-9])", "CCD",
     "^CCL(?=[1-9]\\s)" ,"CCD000",
