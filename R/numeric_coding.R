@@ -105,8 +105,17 @@ join_1col <- function(tbl,
 #' @param cands A table of candidates. Must have variables \code{elec}, \code{dist},
 #' \code{county}, \code{ballot_name}, \code{party_num}, \code{contest_type}
 #' @param office NSE short form of the office in question
+#'
+#' @details Use \code{join_dist} for an office based on a single district number (like USHOU
+#' or state hosue, use \code{join_county} for an office countywide (like Sheriff),
+#' \code{join_countydist} for an office based on both (like county council). All are
+#' wrappers to \code{join_1col}. We simplify the problem into just a one-variable
+#' merge.
+#'
 #' @export
-
+#'
+#'
+#'
 join_dist <- function(tbl, cands, office) {
   office_var <- enquo(office)
   office_name <- quo_name(office_var)
