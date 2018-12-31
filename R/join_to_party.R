@@ -30,17 +30,18 @@ join_1col <- function(tbl,
 
 
   # add counts
-    cand <- cand %>%
-      left_join(
-        count(cand, elec, !!join_cols_cand)
-      ) %>%
-      rename(!!join_name_tbl := !!join_name_cand,
-             !!vote_name := ballot_name)
+  cand <- cand %>%
+    rename(!!join_name_tbl := !!join_name_cand,
+           !!vote_name := ballot_name)
+
+  # join this on districts
+  cand_counts <- count(cand, elec, !!join_cols_cand)
 
     # join relevant precinct voters and candidate
     # CHANGE ALL TO 0s
     joined <- tbl %>%
       left_join(cand, by = c("elec", join_name_tbl, vote_name)) %>% # join to candidate party
+      left_join(cand_counts, by = c("elec", join_name_tbl)) %>% # ncand is at the district level
       mutate(party_num = replace(party_num, is.na(party_num), 0)) %>% #
       select(elec, voter_id, !!vote_col,  !!join_cols_tbl, party_num, n)
 
