@@ -44,7 +44,7 @@ cast_to_wide <- function(df = raw,
     anti_join(p_absentee)
 
   # separate columns for district
-  dist_offices <- c("HOU", "SEN", "USHOU", "SOL")
+  dist_offices <- c("HOU", "SEN", "USHOU", "SOL", "CCD")
 
   # dist num in one office, candidates in another. For SMD
   dist_wide <- select_offices %>%
