@@ -77,6 +77,7 @@ join_dist <- function(tbl, cands, office) {
   cands_office <- filter(cands, contest_type == office_name)
 
   join_name <- glue("{office_name}_dist")
+  join_cand_name <- "dist"
 
   vote_name <- glue("{office_name}_vote")
   vote_party_name <- glue("{office_name}_party")
@@ -86,7 +87,7 @@ join_dist <- function(tbl, cands, office) {
   join_1col(tbl, cands_office,
             vote_col = !!vote_name,
             join_cols_tbl = !!join_name,
-            join_cols_cand = dist) %>%
+            join_cols_cand = !!join_cand_name) %>%
     rename(!!vote_party_name := party_num,
            !!vote_ncand_name := n)
 }

@@ -45,6 +45,6 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8, gtbl = NULL) {
     return(out)
 
   if (!is.null(gtbl))
-    inner_join(geo_wide, out)
+    inner_join(geo_wide, out, by = c("elec", "precinct_id", "ballot_style", "voter_id"))
 }
 
