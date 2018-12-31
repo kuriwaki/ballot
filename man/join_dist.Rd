@@ -3,11 +3,14 @@
 \name{join_dist}
 \alias{join_dist}
 \alias{join_county}
+\alias{join_countydist}
 \title{Join by a single district identifier (congerss, state hosue) or county}
 \usage{
 join_dist(tbl, cands, office)
 
 join_county(tbl, cands, office)
+
+join_countydist(tbl, cands, office)
 }
 \arguments{
 \item{tbl}{variables must be of the type '{office}_{vote}', '{office}_{dist}' (if dist) and

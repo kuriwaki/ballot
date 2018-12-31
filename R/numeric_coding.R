@@ -151,3 +151,30 @@ join_county <- function(tbl, cands, office) {
            !!vote_party_name := party_num,
            !!vote_ncand_name := n)
 }
+
+
+#' @rdname join_dist
+#' @export
+join_countydist <- function(tbl, cands, office) {
+  office_var <- enquo(office)
+  office_name <- quo_name(office_var)
+
+  # make a new column, "ctydist", for county district combination to join on
+  cands_office <- filter(cands, contest_type == office_name)
+  cands_ctydist <- cands_office %>% mutate(ctydist = str_c(county, "-", dist))
+
+  join_name <- glue("{office_name}_dist")
+
+  vote_name <- glue("{office_name}_vote")
+  vote_party_name <- glue("{office_name}_party")
+  vote_ncand_name <- glue("{office_name}_ncand")
+
+  tbl %>%
+    mutate(ctydist = str_c(county, "-", !!join_name)) %>%
+    join_1col(cands_ctydist,
+              vote_col = !!vote_name,
+              join_cols_tbl = ctydist,
+              join_cols_cand = ctydist) %>%
+    rename(!!vote_party_name := party_num,
+           !!vote_ncand_name := n)
+}
