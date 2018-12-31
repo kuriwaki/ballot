@@ -170,7 +170,7 @@ join_countydist <- function(tbl, cands, office) {
   vote_ncand_name <- glue("{office_name}_ncand")
 
   tbl %>%
-    mutate(ctydist = str_c(county, "-", !!join_name)) %>%
+    mutate(ctydist = str_c(county, "-", .data[[join_name]])) %>%
     join_1col(cands_ctydist,
               vote_col = !!vote_name,
               join_cols_tbl = ctydist,
