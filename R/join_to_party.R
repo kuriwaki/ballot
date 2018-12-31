@@ -8,6 +8,8 @@
 #' @param type NSE code for the contest. Will also be used to filter \env{cand} if not null.
 #' @param ... geographic variables to segment on
 #'
+#' #' This assumes that all rows inlcuded in \code{tbl} did have that election to choose and
+#' that the candidate table is complete; therefore NAs are coded to 0 (abstain).
 #'
 #' @export
 #'
@@ -36,9 +38,10 @@ join_1col <- function(tbl,
              !!vote_name := ballot_name)
 
     # join relevant precinct voters and candidate
+    # CHANGE ALL TO 0s
     joined <- tbl %>%
       left_join(cand, by = c("elec", join_name_tbl, vote_name)) %>% # join to candidate party
-      mutate(party_num = replace(party_num, !is.na(n) & is.na(party_num), 0)) %>%
+      mutate(party_num = replace(party_num, is.na(party_num), 0)) %>% #
       select(elec, voter_id, !!vote_col,  !!join_cols_tbl, party_num, n)
 
   joined
@@ -56,10 +59,11 @@ join_1col <- function(tbl,
 #' @param office NSE short form of the office in question
 #'
 #' @details Use \code{join_dist} for an office based on a single district number (like USHOU
-#' or state hosue, use \code{join_county} for an office countywide (like Sheriff),
+#' or state house, use \code{join_county} for an office countywide (like Sheriff),
 #' \code{join_countydist} for an office based on both (like county council). All are
 #' wrappers to \code{join_1col}. We simplify the problem into just a one-variable
 #' merge.
+#'
 #'
 #' @export
 #'
