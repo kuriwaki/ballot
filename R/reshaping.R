@@ -74,8 +74,14 @@ cast_to_wide <- function(df = raw,
          variable.name = "office") %>% # ignore abstentions
     distinct()
 
+  if (nrow(distinct(dists_long,  elec, precinct_id, ballot_style, office)) != nrow(dists_long)) {
+    n_temp <- nrow(dists_long)
+    dists_long <- distinct(dists_long, elec, precinct_id, ballot_style, office, .keep_all = TRUE)
+    warning(glue("multiple districts in the same office. Force dropping {n_temp - nrow(dists_long)} district-candidates!"))
+  }
+
+
   # check if each precinct - district number is unique
-  stopifnot(nrow(distinct(dists_long)) == nrow(dists_long))
   district_table <- dists_long %>%
     dcast(elec + precinct_id + ballot_style ~ office, value.var = "dist")
 
