@@ -36,7 +36,8 @@ join_1col <- function(tbl,
            !!vote_name := ballot_name)
 
   # add counts and rename
-  cand_counts <- count(cand, elec, .data[[join_name_tbl]])
+  cand_counts <- group_by(cand, elec, .data[[join_name_tbl]]) %>%
+    summarize(n = sum(party_num %in% c(-1, 1)))
 
   # join relevant precinct voters and candidate
   # CHANGE ALL TO 0s
@@ -65,6 +66,11 @@ join_1col <- function(tbl,
 #' \code{join_countydist} for an office based on both (like county council). All are
 #' wrappers to \code{join_1col}. We simplify the problem into just a one-variable
 #' merge.
+#'
+#' It creates new columns for each  \code{contest}: \code{contest_party}, a numeric
+#' -1 (D), 0 (Abstain / 3rd Party / Write-in), 1 (R), and \code{contest_dist}, a
+#' number for the district of the voter of the contest in question if applicable, and
+#' \code{contest_ncand}, the number of D-Rs in the district (does not count 3rd party)
 #'
 #'
 #' @export

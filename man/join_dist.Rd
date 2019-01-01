@@ -31,4 +31,9 @@ or state house, use \code{join_county} for an office countywide (like Sheriff),
 \code{join_countydist} for an office based on both (like county council). All are
 wrappers to \code{join_1col}. We simplify the problem into just a one-variable
 merge.
+
+It creates new columns for each  \code{contest}: \code{contest_party}, a numeric
+-1 (D), 0 (Abstain / 3rd Party / Write-in), 1 (R), and \code{contest_dist}, a
+number for the district of the voter of the contest in question if applicable, and
+\code{contest_ncand}, the number of D-Rs in the district (does not count 3rd party)
 }
