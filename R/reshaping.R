@@ -58,7 +58,25 @@ cast_to_wide <- function(df = raw,
     tbl_df()
 
   # impute dist when the vote (therefore the indicator of district) is missing
+  dists_long <- dist_wide %>%
+    as.data.table() %>%
+    melt(id.vars = c("elec", "precinct_id", "ballot_style"),
+         measure.vars = patterns("_dist$"),
+         na.rm = TRUE,
+         value.name = "dist",
+         variable.name = "office")  # ignore abstentions
 
+  # check if each precinct - district number is unique
+  stopifnot(nrow(distinct(dists_long)) == nrow(dists_long))
+  district_table <- dists_long %>%
+    dcast(elec + precinct_id + ballot_style ~ office)
+
+  # join and coalesce
+  dist_wide_imp <- left_join(dist_wide, district_table,
+            by = c("elec", "precinct_id", "ballot_style"),
+            suffix = c(".a", ".b")) %>%
+    my_coalesce(cols = dists_offices) %>%
+    select(-matches("\\.a$"), -matches("\\.b$"))
 
 
   # other offices (use the 7-digit code on its own)
@@ -68,5 +86,14 @@ cast_to_wide <- function(df = raw,
     dcast(elec + voter_id ~ contest_code, value.var = "choice_name") %>%
     tbl_df()
 
-  left_join(dist_wide, df_wide_oth, by = c("elec", "voter_id"))
+  left_join(dist_wide_imp, df_wide_oth, by = c("elec", "voter_id"))
+}
+
+
+# https://stackoverflow.com/questions/49075824/using-tidy-eval-for-multiple-dplyr-filter-conditions
+pair_coalesce <- function(df, cols){
+  fp <- map(cols,
+            function(x) quo((!!(as.name(x))) := coalesce(!!str_c(x, ".a"), !!str_c(x, ".b")))
+  )
+  mutate(df, !!!fp)
 }
