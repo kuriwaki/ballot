@@ -31,19 +31,20 @@ join_1col <- function(tbl,
 
   # add counts
   cand <- cand %>%
+    filter(!is.na(!!join_cols_cand)) %>%
     rename(!!join_name_tbl := !!join_name_cand,
            !!vote_name := ballot_name)
 
-  # join this on districts
-  cand_counts <- count(cand, elec, !!join_cols_cand)
+  # add counts and rename
+  cand_counts <- count(cand, elec, !!join_cols_tbl)
 
-    # join relevant precinct voters and candidate
-    # CHANGE ALL TO 0s
-    joined <- tbl %>%
-      left_join(cand, by = c("elec", join_name_tbl, vote_name)) %>% # join to candidate party
-      left_join(cand_counts, by = c("elec", join_name_tbl)) %>% # ncand is at the district level
-      mutate(party_num = replace(party_num, is.na(party_num), 0)) %>% #
-      select(elec, voter_id, !!vote_col,  !!join_cols_tbl, party_num, n)
+  # join relevant precinct voters and candidate
+  # CHANGE ALL TO 0s
+  joined <- tbl %>%
+    left_join(cand, by = c("elec", join_name_tbl, vote_name)) %>% # join to candidate party
+    left_join(cand_counts, by = c("elec", join_name_tbl)) %>% # ncand is at the district level
+    mutate(party_num = replace(party_num, is.na(party_num), 0)) %>% #
+    select(elec, voter_id, !!vote_col,  !!join_cols_tbl, party_num, n)
 
   joined
 }
@@ -77,7 +78,7 @@ join_dist <- function(tbl, cands, office) {
   cands_office <- filter(cands, contest_type == office_name)
 
   join_name <- glue("{office_name}_dist")
-  join_cand_name <- "dist"
+  join_name_cand <- "dist"
 
   vote_name <- glue("{office_name}_vote")
   vote_party_name <- glue("{office_name}_party")
@@ -87,7 +88,7 @@ join_dist <- function(tbl, cands, office) {
   join_1col(tbl, cands_office,
             vote_col = !!vote_name,
             join_cols_tbl = !!join_name,
-            join_cols_cand = !!join_cand_name) %>%
+            join_cols_cand = !!join_name_cand) %>%
     rename(!!vote_party_name := party_num,
            !!vote_ncand_name := n)
 }
@@ -100,8 +101,6 @@ join_county <- function(tbl, cands, office) {
 
   cands_office <- filter(cands, contest_type == office_name)
 
-  join_name <- "county"
-
   vote_name <- glue("{office_name}0000")
   vote_party_name <- glue("{office_name}_party")
   vote_ncand_name <- glue("{office_name}_ncand")
@@ -109,7 +108,7 @@ join_county <- function(tbl, cands, office) {
 
   join_1col(tbl, cands_office,
             vote_col = !!vote_name,
-            join_cols_tbl = !!join_name,
+            join_cols_tbl = county,
             join_cols_cand = county) %>%
     rename(!!vote_name2_name := !!vote_name,
            !!vote_party_name := party_num,
@@ -128,6 +127,7 @@ join_countydist <- function(tbl, cands, office) {
   cands_ctydist <- cands_office %>% mutate(ctydist = str_c(county, "-", dist))
 
   join_name <- glue("{office_name}_dist")
+  join_name_cand <- "ctydist"
 
   vote_name <- glue("{office_name}_vote")
   vote_party_name <- glue("{office_name}_party")
@@ -137,8 +137,8 @@ join_countydist <- function(tbl, cands, office) {
     mutate(ctydist = str_c(county, "-", .data[[join_name]])) %>%
     join_1col(cands_ctydist,
               vote_col = !!vote_name,
-              join_cols_tbl = ctydist,
-              join_cols_cand = ctydist) %>%
+              join_cols_tbl = !!join_name_cand,
+              join_cols_cand = !!join_name_cand) %>%
     rename(!!vote_party_name := party_num,
            !!vote_ncand_name := n)
 }
