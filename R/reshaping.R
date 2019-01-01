@@ -25,7 +25,6 @@ cast_to_wide <- function(df = raw,
     summarize(max_votes = max(n)) %>%
     ungroup() %>%
     arrange(-max_votes)
-  cat("Number of votes a person can vote for in a county\n")
 
   # votes for code, by precinct. since every record in raw is a vote, length captures the number of votes
 
@@ -38,10 +37,9 @@ cast_to_wide <- function(df = raw,
     filter(str_detect(precinct, regex("(Absentee|Failsafe)", ignore_case = TRUE))) %>%
     distinct(elec, precinct_id)
 
-
   # select offices and non-absentee
   select_offices <- filter(df_one, contest_type %in% contests) %>%
-    anti_join(p_absentee)
+    anti_join(p_absentee, by = c("elec", "precinct_id"))
 
   # separate columns for district
   dist_offices <- c("HOU", "SEN", "USHOU", "SOL", "CCD")
