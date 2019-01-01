@@ -36,7 +36,7 @@ cast_to_wide <- function(df = raw,
   # Non-absentee precinct
   p_absentee <- df %>%
     filter(str_detect(precinct, regex("(Absentee|Failsafe)", ignore_case = TRUE))) %>%
-    distinct(precinct_id)
+    distinct(elec, precinct_id)
 
 
   # select offices and non-absentee
@@ -49,13 +49,16 @@ cast_to_wide <- function(df = raw,
   # dist num in one office, candidates in another. For SMD
   dist_wide <- select_offices %>%
     filter(contest_type %in% dist_offices) %>%
-    mutate(dist = as.integer(parse_number(contest_code))) %>%
+    mutate(dist = as.numeric(parse_number(contest_code))) %>% # DISTRICT
     rename(vote = choice_name) %>%
     as.data.table() %>%
     dcast(elec + voter_id ~ contest_type, value.var = c("vote", "dist")) %>%
     rename_at(vars(matches("vote_")), function(x) str_c(str_remove(x, "vote_"), "_vote")) %>%
     rename_at(vars(matches("dist_")), function(x) str_c(str_remove(x, "dist_"), "_dist")) %>%
     tbl_df()
+
+  # impute dist when the vote (therefore the indicator of district) is missing
+
 
 
   # other offices (use the 7-digit code on its own)
