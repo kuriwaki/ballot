@@ -16,6 +16,12 @@ have the variables \code{elec}, \code{county}, \code{contest_code}, \code{voter_
 
 \item{contests}{A vector of contest_codes to select and put into the wide.}
 }
+\value{
+A dataset at the individual voter level. For some offices with a district,
+these are collapsed to a pair-district pairing. If a voter abstained the
+_vote  variable is \code{NA} (indeed it was not in the long dataset), but
+we try to impute the district by the voter's precinct and ballot style.
+}
 \description{
 This drops offices where multiple votes are cast for the same contest_code. This
 is necessary to make a voter uniquely identify a vote for a contest (column).
