@@ -45,12 +45,14 @@ cast_to_wide <- function(df = raw,
   dist_offices <- c("HOU", "SEN", "USHOU", "SOL", "CCD")
 
   # dist num in one office, candidates in another. For SMD
-  dist_wide <- select_offices %>%
+  dt_fmt <- select_offices %>%
     filter(contest_type %in% dist_offices) %>%
     mutate(dist = as.numeric(parse_number(contest_code))) %>% # DISTRICT
     rename(vote = choice_name) %>%
-    as.data.table() %>%
-    dcast(elec + voter_id ~ contest_type, value.var = c("vote", "dist")) %>%
+    as.data.table()
+
+  dist_wide <- dt_fmt %>%
+    dcast(elec + county + precinct_id + precinct + ballot_style + voter_id ~ contest_type, value.var = c("vote", "dist")) %>%
     rename_at(vars(matches("vote_")), function(x) str_c(str_remove(x, "vote_"), "_vote")) %>%
     rename_at(vars(matches("dist_")), function(x) str_c(str_remove(x, "dist_"), "_dist")) %>%
     tbl_df()
@@ -63,8 +65,8 @@ cast_to_wide <- function(df = raw,
   df_wide_oth <- select_offices %>%
     filter(!contest_type %in% dist_offices) %>%
     as.data.table() %>%
-    dcast(elec + county + precinct_id + precinct + ballot_style + voter_id ~ contest_code, value.var = "choice_name") %>%
+    dcast(elec + voter_id ~ contest_code, value.var = "choice_name") %>%
     tbl_df()
 
-  left_join(df_wide_oth, dist_wide, by = c("elec", "voter_id"))
+  left_join(dist_wide, df_wide_oth, by = c("elec", "voter_id"))
 }
