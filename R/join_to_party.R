@@ -40,8 +40,10 @@ join_1col <- function(tbl,
     summarize(n = sum(party_num %in% c(-1, 1)))
 
   # join relevant precinct voters and candidate
+  # also delete junior senior as this does not seem to be in tbl
   # CHANGE ALL TO 0s
   joined <- tbl %>%
+    mutate(!!vote_name := str_remove(.data[[vote_name]], "\\s+(Jr|Sr)\\.?$")) %>%
     left_join(cand, by = c("elec", join_name_tbl, vote_name)) %>% # join to candidate party
     left_join(cand_counts, by = c("elec", join_name_tbl)) %>% # ncand is at the district level
     mutate(party_num = replace(party_num, is.na(party_num), 0)) %>% #
@@ -105,7 +107,7 @@ join_county <- function(tbl, cands, office) {
 
   cands_office <- filter(cands, contest_type == office_name)
 
-  vote_name <-       as.character(glue("{office_name}0000"))
+  vote_name <-       str_pad(office_name, width = 7, side = "right", pad = "0")
   vote_party_name <- as.character(glue("{office_name}_party"))
   vote_ncand_name <- as.character(glue("{office_name}_ncand"))
   vote_name2_name <- as.character(glue("{office_name}_vote"))
