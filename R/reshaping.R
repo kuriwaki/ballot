@@ -120,11 +120,4 @@ cast_to_wide <- function(df = raw,
 }
 
 
-# https://stackoverflow.com/questions/49075824/using-tidy-eval-for-multiple-dplyr-filter-conditions
-pair_coalesce <- function(df, cols){
 
-  fp <- map(cols,
-            function(x) quo(!!(as.name(x)) := coalesce(.data[[str_c(x, ".a")]], .data[[str_c(x, ".b")]]))
-  )
-  mutate(df, !!!fp)
-}
