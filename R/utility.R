@@ -27,3 +27,27 @@ sample_fvoters <- function(tbl, frac) {
 
   semi_join(tbl, sampled, by = c("elec", "voter_id"))
 }
+
+
+
+#' Bind a list of dataframes, but with only a subset of variables
+#'
+#' Wrapper to map_dfr but specifies variables to use. This is useful when the underlying data
+#' is large and has lots of variables that are not necessary.
+#'
+#' @param df_list A list of dataframes to bind.
+#' @param regex A regular expression to
+#' @param default character vector of variables (like identifiers to always keep)
+#'
+#' @importFrom purrr map_dfr
+#' @export
+
+slim_bind = function(df_list, regex, default = c("elec", "county", "precinct_id", "ballot_style", "voter_id")) {
+  if (inherits(df_list, "tbl_df")) df_list <- list(df_list)
+
+  if (!inherits(df_list, "list")) stop("Input must be a list of dataframes")
+
+  map_dfr(df_list,
+          function(v) select(v, !!!default, matches(regex)))
+}
+
