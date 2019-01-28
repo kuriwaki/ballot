@@ -6,7 +6,6 @@
 #'
 #' @importFrom foreach foreach
 #'
-#' @export
 read_format_EL155 <- function(paths) {
 
   # countynames
@@ -18,7 +17,7 @@ read_format_EL155 <- function(paths) {
       .inorder = TRUE,
       .combine = "bind_rows",
       .packages = c("ballot", "dplyr")
-    ) %dopar% {
+    ) %do% {
       el155name <- grep("EL155", list.files(paths[i]), value = TRUE, ignore.case = TRUE)
 
       # rarely there are more than one EL155 file
