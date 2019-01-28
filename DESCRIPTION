@@ -11,6 +11,7 @@ Description: A set of functions to read publicly available ballot image data.
 Depends: 
     dplyr,
     fuzzyjoin,
+    IRanges,
     purrr,
     readr,
     stringr,
