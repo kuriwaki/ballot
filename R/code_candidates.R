@@ -12,7 +12,7 @@ stwide_to_numeric <- function(tbl, year) {
   if (year == "2010") {
     out <- tbl %>%
       mutate(
-        GOV = recode(GOV0000, `Nikki R Haley` = 1L, `Vincent Sheheen` = -1L, .default = 0L, .missing = 0L),
+        GOV = recode(GOV0000, `Nikki R Haley` = 1L, `Vincent A Sheheen` = -1L, .default = 0L, .missing = 0L),
         USSEN = recode(USSEN01, `Jim DeMint` = 1L, `Alvin M Greene` = -1L, .default = 0L, .missing = 0L),
         LGV = recode(LGV0000, `Ken Ard` = 1L, `Ashley Cooper` = -1L, .default = 0L, .missing = 0L),
         ATG = recode(ATG0000, `Alan Wilson` = 1L, `Matthew Richardson` = -1L, .default = 0L, .missing = 0L),
