@@ -3,23 +3,31 @@
 \name{sample_nvoters}
 \alias{sample_nvoters}
 \alias{sample_fvoters}
-\title{Take a small sample of voters}
+\alias{sample_nprecincts}
+\alias{sample_fprecincts}
+\title{Take a small sample of voters or precincts}
 \usage{
 sample_nvoters(tbl, n)
 
 sample_fvoters(tbl, frac)
+
+sample_nprecincts(tbl, n)
+
+sample_fprecincts(tbl, frac)
 }
 \arguments{
 \item{tbl}{the dataset that has the columns \code{elec} and \code{voter_id}
-(useful if a long version)}
+(for \code{sample_nvoters} or \code{sample_fvoters}) and \code{elec} and \code{precinct_id}
+(for \code{sample_nprecincts} or \code{sample_fprecincts}).}
 
-\item{n}{Number of voters to sample}
+\item{n}{Number of voters or precincts to sample}
 
-\item{frac}{Fraction of voters to sample. Alternative to \code{n}}
+\item{frac}{Fraction of voters or precicts to sample. Alternative to \code{n}}
 }
 \description{
 Custom wrapper around \code{dplyr::sample_n} and \code{dplyr::sample_frac}.
 Instead of taking samples of rows, it takes a sample of voters defined by
-\code{elec, voter_id}. Useful for long-form datasets where each row is an
+voters (\code{elec, voter_id}) or precincts(\code{elec, precinct_id}).
+This is Useful for long-form datasets where each row is an
 vote for a particular office by a person.
 }

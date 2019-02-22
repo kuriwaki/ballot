@@ -1,14 +1,16 @@
-#' Take a small sample of voters
+#' Take a small sample of voters or precincts
 #'
 #' Custom wrapper around \code{dplyr::sample_n} and \code{dplyr::sample_frac}.
 #' Instead of taking samples of rows, it takes a sample of voters defined by
-#' \code{elec, voter_id}. Useful for long-form datasets where each row is an
+#' voters (\code{elec, voter_id}) or precincts(\code{elec, precinct_id}).
+#' This is Useful for long-form datasets where each row is an
 #' vote for a particular office by a person.
 #'
 #' @param tbl the dataset that has the columns \code{elec} and \code{voter_id}
-#'  (useful if a long version)
-#' @param n Number of voters to sample
-#' @param frac Fraction of voters to sample. Alternative to \code{n}
+#'  (for \code{sample_nvoters} or \code{sample_fvoters}) and \code{elec} and \code{precinct_id}
+#'  (for \code{sample_nprecincts} or \code{sample_fprecincts}).
+#' @param n Number of voters or precincts to sample
+#' @param frac Fraction of voters or precicts to sample. Alternative to \code{n}
 #'
 #' @export
 sample_nvoters <- function(tbl, n) {
@@ -27,6 +29,28 @@ sample_fvoters <- function(tbl, frac) {
 
   semi_join(tbl, sampled, by = c("elec", "voter_id"))
 }
+
+#' @rdname sample_nvoters
+#'
+#' @export
+sample_nprecincts <- function(tbl, n) {
+  by_voter <- distinct(tbl, elec, precinct_id)
+  sampled <- sample_n(by_voter, n)
+
+  semi_join(tbl, sampled, by = c("elec", "precinct_id"))
+}
+
+
+#' @rdname sample_nvoters
+#'
+#' @export
+sample_fprecincts <- function(tbl, frac) {
+  by_voter <- distinct(tbl, elec, precinct_id)
+  sampled <- sample_frac(by_voter, frac)
+
+  semi_join(tbl, sampled, by = c("elec", "precinct_id"))
+}
+
 
 
 
