@@ -22,11 +22,13 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8, gtbl = NULL) {
     filter(value > 0)
 
   # should delete most irrelevant races
-  where_elec <- semi_join(tbl, race_existence, by = c("elec", "precinct_id", "ballot_style")) %>%
-    select(elec, precinct_id, ballot_style, voter_id, matches(pattern))
+  mrg_on <- c("elec", "precinct_id", "ballot_style")
+  where_elec <- semi_join(tbl, race_existence, by = mrg_on) %>%
+    select(!!!mrg_on, voter_id, matches(pattern))
 
   # record variable which has votes
   contest_name <- colnames(where_elec)[length(where_elec)]
+  stopifnot(length(where_elec) == length(mrg_on) + 1 + 1) # input data should have it as one column
   stopifnot(contest_name != "voter_id")
 
   # sometimes the abstentions are too much.. if so treat these as the race didn't happen
