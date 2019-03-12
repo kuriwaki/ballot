@@ -18,7 +18,14 @@ stwide_to_numeric <- function(tbl, year) {
         ATG_party = recode(ATG0000, `Alan Wilson` = 1L, `Matthew Richardson` = -1L, .default = 0L, .missing = 0L),
         SOS_party = recode(SOS0000, `Mark Hammond` = 1L, `Marjorie L Johnson` = -1L, .default = 0L, .missing = 0L),
         SSI_party = recode(SSI0000, `Mick Zais` = 1L, `Frank Holleman` = -1L, .default = 0L, .missing = 0L)
-      )
+      ) %>%
+      rename(
+        GOV_vote = GOV0000,
+        USSEN_vote = USSEN01,
+        LGV_vote = LGV0000,
+        ATG_vote = ATG0000,
+        SOS_vote = SOS0000,
+        SSI_vote = SSI0000)
   }
 
   # 2012
@@ -26,7 +33,10 @@ stwide_to_numeric <- function(tbl, year) {
     out <- tbl %>%
       mutate(
         PRS_party = recode(PRS0000, `Mitt Romney` = 1L, `Barack Obama` = -1L, .default = 0L, .missing = 0L)
-      )
+      ) %>%
+      rename(
+        PRS_vote = PRS0000
+        )
   }
 
   # 2014
@@ -40,6 +50,15 @@ stwide_to_numeric <- function(tbl, year) {
         ATG_party = recode(ATG0000, `Alan Wilson` = 1L, `Parnell Diggs` = -1L, .default = 0L, .missing = 0L),
         SOS_party = recode(SOS0000, `Mark Hammond` = 1L, `Ginny Deerin` = -1L, .default = 0L, .missing = 0L),
         SSI_party = recode(SSI0000, `Molly Mitchell Spearman` = 1L, `Tom Thompson` = -1L, .default = 0L, .missing = 0L)
+      ) %>%
+      rename(
+        GOV_vote = GOV0000,
+        USSEN1_vote = USSEN01,
+        USSEN2_vote = USSEN02,
+        LGV_vote = LGV0000,
+        ATG_vote = ATG0000,
+        SOS_vote = SOS0000,
+        SSI_vote = SSI0000
       )
   }
 
@@ -49,7 +68,11 @@ stwide_to_numeric <- function(tbl, year) {
       mutate(
         PRS_party = recode(PRS0000, `Donald J Trump` = 1L, `Hillary Rodham Clinton` = -1L, .default = 0L, .missing = 0L),
         USSEN_party = recode(USSEN01, `Tim Scott` = 1L,  `Thomas Dixon` = -1L, .default = 0L, .missing = 0L)
-      )
+      ) %>%
+      rename(
+        PRS_vote = PRS0000,
+        USSEN_vote = USSEN01
+        )
   }
 
   if (year == "2018") {
@@ -59,6 +82,12 @@ stwide_to_numeric <- function(tbl, year) {
         ATG_party = recode(ATG0000, `Alan Wilson` = 1L, `Constance Anastopoulo` = -1L, .default = 0L, .missing = 0L),
         SOS_party = recode(SOS0000, `Mark Hammond` = 1L, `Melvin T Whittenburg` = -1L, .default = 0L, .missing = 0L),
         SSI_party = recode(SSI0000, `Molly Mitchell Spearman` = 1L, `Israel Romero` = -1L, .default = 0L, .missing = 0L)
+      ) %>%
+      rename(
+        GOV_vote = GOV0000,
+        ATG_vote = ATG0000,
+        SOS_vote = SOS0000,
+        SSI_vote = SSI0000
       )
   }
 
@@ -67,6 +96,8 @@ stwide_to_numeric <- function(tbl, year) {
   out <- out %>%
     mutate(
       PTY_party = recode(PTY0000, `Republican` = 1L, `Democratic` = -1L, .default = 0L, .missing = 0L)
-    )
+    ) %>%
+    rename(PTY_vote = PTY0000)
+
   out
 }
