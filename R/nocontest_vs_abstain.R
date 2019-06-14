@@ -8,16 +8,16 @@
 #' @param gtbl join with a table with more district information like county.
 #'
 #' @importFrom skimr inline_hist
+#' @importFrom tidyr pivot_longer
 #'
 #' @export
 #'
 filter_existing <- function(tbl, pattern, race, na_thresh = 0.8, gtbl = NULL) {
   race_existence <- race %>%
-    as.data.table() %>%
-    melt.data.table(
-      id.vars = c("elec", "precinct_id", "ballot_style"),
-      measure.vars = patterns(pattern),
-      variable.name = "contest_code"
+    select(elec, precinct_id, ballot_style, matches(pattern)) %>%
+    pivot_longer(
+      -c(elec, precinct_id, ballot_style),
+      names_to = "contest_code"
     ) %>%
     filter(value > 0)
 
