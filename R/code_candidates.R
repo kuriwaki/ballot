@@ -101,3 +101,64 @@ stwide_to_numeric <- function(tbl, year) {
 
   out
 }
+
+
+#' Translate abbreviation codes to labels
+#'
+#' @param vec a character vector of variable labels
+#'
+#' @importFrom dplyr recode
+#' @export
+recode_abbrv <- function(vec) {
+  recode(vec,
+         PRS =   "President",
+         PRS_party =   "President",
+         PTY =     "Party Ticket",
+         PTY_party =     "Party Ticket",
+         party =   "Party Ticket",
+         USSEN = "US Senate",
+         USSEN_party = "US Senate",
+         USSEN1 = "US Senate",
+         USSEN1_party = "US Senate",
+         USSEN2 = "US Senate Special",
+         USSEN2_party = "US Senate Special",
+         GOV =   "Governor",
+         LGV =   "Lt Governor",
+         SOS =   "Secretary of State",
+         ATG =   "Attorney General",
+         SSI =   "School Superintendent",
+         GOV_party =   "Governor",
+         LGV_party =   "Lt Governor",
+         SOS_party =   "Secretary of State",
+         ATG_party =   "Attornery General",
+         SSI_party =   "School Superintendent",
+         USHOU_party = "US House",
+         SEN_party =   "State Senate",
+         HOU_party =   "State House",
+         SHF_party =   "County Sheriff",
+         CLR_party =   "Clerk of Court",
+         COR_party =   "Coroner",
+         CCD_party =   "County Council",
+         AUD_party =   "County Auditor",
+         USHOU = "US House",
+         SEN =   "State Senate",
+         HOU =   "State House",
+         SHF =   "County\nSheriff",
+         CLR =   "Clerk of Court",
+         COR =   "Coroner",
+         CCD =   "County Council",
+         JPRB =   "Probate Judge",
+         JPRB_party =   "Probate Judge",
+         CTRES =   "County Treasurer",
+         CTRES_party =   "County Treasurer",
+         CAP =   "Tax for\nCapital\nProjects",
+         SCH =   "Tax for\nSchool\nProjects",
+         BND =   "Issue Bonds",
+         ALC =   "Alcohol Sale",
+         LRCA1 =   "Con. Amendment: Gambling",
+         LRCA2 =   "Con. Amendment: Form of Gov",
+         national = "Federal Offices",
+         subnational = "State and Local Offices",
+         ref = "County Referenda"
+  )
+}
