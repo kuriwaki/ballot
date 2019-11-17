@@ -2,6 +2,7 @@
 
 export(add_id)
 export(add_precinct)
+export(add_wi)
 export(cast_to_wide)
 export(choice_to_ascii)
 export(filter_existing)
@@ -40,3 +41,4 @@ importFrom(glue,glue)
 importFrom(purrr,map_dfr)
 importFrom(skimr,inline_hist)
 importFrom(stringr,str_replace_all)
+importFrom(tidyr,pivot_longer)

@@ -37,7 +37,9 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8, gtbl = NULL) {
     summarize(prop_na = mean(is.na(.data[[contest_name]]))) %>%
     ungroup()
 
-  cat(glue("missings: {skimr::inline_hist(missings$prop_na)}, deleting where NA proportion >= {na_thresh}"), "\n")
+  nmiss <- nrow(filter(missings, prop_na >= na_thresh))
+
+  cat(glue("missings: {skimr::inline_hist(missings$prop_na)}, deleting {nmiss} ballot-styles where NA proportion >= {na_thresh}"), "\n")
 
   exist_2 <- filter(missings, prop_na < na_thresh)
 
@@ -47,6 +49,6 @@ filter_existing <- function(tbl, pattern, race, na_thresh = 0.8, gtbl = NULL) {
     return(out)
 
   if (!is.null(gtbl))
-    inner_join(geo_wide, out, by = c("elec", "precinct_id", "ballot_style", "voter_id"))
+    inner_join(gtbl, out, by = c("elec", "precinct_id", "ballot_style", "voter_id"))
 }
 

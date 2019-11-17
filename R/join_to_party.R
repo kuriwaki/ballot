@@ -147,3 +147,5 @@ join_countydist <- function(tbl, cands, office) {
     rename(!!vote_party_name := party_num,
            !!vote_ncand_name := n)
 }
+
+

@@ -4,10 +4,12 @@
 \alias{recode_abbrv}
 \title{Translate abbreviation codes to labels}
 \usage{
-recode_abbrv(vec)
+recode_abbrv(vec, linebreak = FALSE)
 }
 \arguments{
 \item{vec}{a character vector of variable labels}
+
+\item{linebreak}{whether or not to linebreak labels}
 }
 \description{
 Translate abbreviation codes to labels
