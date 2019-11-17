@@ -275,3 +275,24 @@ choice_to_ascii <- function(tbl) {
       choice_name = str_replace(choice_name, "\\.$", "")
     )
 }
+
+
+#' Add "other" and write in votes
+#'
+#' For a given office, looks at office_vote (the candidate in characters) and
+#' the office_party (the party, -1, 1, or otherwise 0), and edits the 0 to 0.5
+#' if office_party is 0 but candiddate name is not NA (a third party or write-in)
+#'
+#' @param tbl wide table
+#' @param var the unquoted office variable
+#'
+#' @export
+add_wi <- function(tbl, var) {
+  var <- enquo(var)
+  var_name <- quo_name(var)
+  votevar_name <- str_replace(var_name, "_party", "_vote")
+  votevar <- enquo(votevar_name)
+
+  tbl %>%
+    mutate(!!var := replace(!!var, !!var == 0 & !is.na(.data[[votevar_name]]), 0.5))
+}
