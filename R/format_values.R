@@ -61,15 +61,15 @@ std_contest <- function(vec, .type = NULL) {
   regex_natnl <- tribble(
     ~pattern, ~replace,
     "President.*", "PRS0000 President",
-    suppressWarnings(glue("({ush_p1}1.*|{ush_p2}1|{ush_p3}1\\s+{ush_p2}.*)")), "USHOU01 US House SC-01",
-    suppressWarnings(glue("({ush_p1}2.*|{ush_p2}2|{ush_p3}2\\s+{ush_p2}.*)")), "USHOU02 US House SC-02",
-    suppressWarnings(glue("({ush_p1}3.*|{ush_p2}3|{ush_p3}3\\s+{ush_p2}.*)")), "USHOU03 US House SC-03",
-    suppressWarnings(glue("({ush_p1}4.*|{ush_p2}4|{ush_p3}4\\s+{ush_p2}.*)")), "USHOU04 US House SC-04",
-    suppressWarnings(glue("({ush_p1}5.*|{ush_p2}5|{ush_p3}5\\s+{ush_p2}.*)")), "USHOU05 US House SC-05",
-    suppressWarnings(glue("({ush_p1}6.*|{ush_p2}6|{ush_p3}6\\s+{ush_p2}.*)")), "USHOU06 US House SC-06",
-    suppressWarnings(glue("({ush_p1}7.*|{ush_p2}7|{ush_p3}7\\s+{ush_p2}.*)")), "USHOU07 US House SC-07",
-    "^(U\\.?\\s?S\\.?||UNITED STATES) Senat(e|or)$", "USSEN01 US Senator",
-    "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired? Term\\)", "USSEN02 US Senator (Special)",
+    suppressWarnings(glue("({ush_p1}1.*|{ush_p2}1|{ush_p3}1\\s+{ush_p2}.*)")), "USH0001 US House SC-01",
+    suppressWarnings(glue("({ush_p1}2.*|{ush_p2}2|{ush_p3}2\\s+{ush_p2}.*)")), "USH0002 US House SC-02",
+    suppressWarnings(glue("({ush_p1}3.*|{ush_p2}3|{ush_p3}3\\s+{ush_p2}.*)")), "USH0003 US House SC-03",
+    suppressWarnings(glue("({ush_p1}4.*|{ush_p2}4|{ush_p3}4\\s+{ush_p2}.*)")), "USH0004 US House SC-04",
+    suppressWarnings(glue("({ush_p1}5.*|{ush_p2}5|{ush_p3}5\\s+{ush_p2}.*)")), "USH0005 US House SC-05",
+    suppressWarnings(glue("({ush_p1}6.*|{ush_p2}6|{ush_p3}6\\s+{ush_p2}.*)")), "USH0006 US House SC-06",
+    suppressWarnings(glue("({ush_p1}7.*|{ush_p2}7|{ush_p3}7\\s+{ush_p2}.*)")), "USH0007 US House SC-07",
+    "^(U\\.?\\s?S\\.?||UNITED STATES) Senat(e|or)$", "USS0001 US Senator",
+    "^U\\.?\\s?S\\.? Senat(e|or) \\(Unexpired? Term\\)", "USS0002 US Senator (Special)",
   )
 
 
@@ -82,7 +82,7 @@ std_contest <- function(vec, .type = NULL) {
     "Secretary of State", "SOS0000 Secretary of State",
     "^Auditor", "AUD0000 Auditor",
     "^Adjutant General", "ADJ0000 Adjutant General",
-    "^State Treasurer", "STRES00 State Treasurer",
+    "^State Treasurer", "STR0000 State Treasurer",
     "^Comp(tr|rt)oller General", "CMP0000 Comptroller General",
     "^State Superintendent.*", "SSI0000 State Superintendent of Education",
     "^Commissioner of Agri.*", "AGR0000 State Commissioner of Agriculture"
@@ -102,10 +102,10 @@ std_contest <- function(vec, .type = NULL) {
   regex_ctwid <- tribble(
     ~pattern, ~replace,
     "County Auditor", "CAUD000 County Auditor",
-    "^County Treasurer", "CTRES00 County Treasurer",
+    "^County Treasurer", "CTR0000 County Treasurer",
     "Coroner", "COR0000 Coroner",
     "^Sheriff", "SHF0000 Sheriff",
-    "^Probate Judge", "JPRB000 Probate Judge",
+    "^Probate Judge", "JPR0000 Probate Judge",
     "(County )?Clerk of Cour(t|)", "CLR0000 Clerk of Court",
     "County Council Chair", "CCC0000 County Coucil Chair",
     "Register of Deeds", "RGD0000 Register of Deeds",
@@ -166,7 +166,7 @@ std_contest <- function(vec, .type = NULL) {
   recode_vec <- regex_recode$replace
   names(recode_vec) <- regex_recode$pattern
 
-  # replace
+  # REPLACE
   str_replace_all(vec, regex(recode_vec, ignore_case = TRUE))
 }
 

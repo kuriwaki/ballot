@@ -21,9 +21,9 @@
 #'
 #' @export
 cast_to_wide <- function(df = raw,
-                         contests = c("PTY", "PRS", "USHOU", "USSEN", "GOV", "LGV", "SOS", "ATG", "SSI",
-                                      "HOU", "SEN", "JPRB", "SHF", "COR", "CLR", "AUD",
-                                      "CTRES", "CCL","CCD", "CCA", "CCC", "SCH", "JPRB", "WAT", "Q", "LRCA")) {
+                         contests = c("PTY", "PRS", "USH", "USS", "GOV", "LGV", "SOS", "ATG", "SSI",
+                                      "HOU", "SEN", "JPR", "SHF", "COR", "CLR", "AUD",
+                                      "CTR", "CCL", "CCD", "CCA", "CCC", "SCH", "WAT", "Q", "LRCA")) {
 
 
   # slow
@@ -49,7 +49,7 @@ cast_to_wide <- function(df = raw,
     anti_join(p_absentee, by = c("elec", "precinct_id"))
 
   # separate columns for district
-  dist_offices <- c("HOU", "SEN", "USHOU", "SOL", "CCD")
+  dist_offices <- c("HOU", "SEN", "USH", "SOL", "CCD")
 
   # dist num in one office, candidates in another. For SMD
   dt_fmt <- select_offices %>%
