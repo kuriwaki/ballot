@@ -8,9 +8,11 @@ Maintainer: Shiro Kuriwaki <kuriwaki@g.harvard.edu>
 Description: A set of functions to read publicly available ballot image data.
     Mainly built towards reading the South Carolina audit files from iVotronic 
     readers.
+URL: https://github.com/kuriwaki/ballot
 Depends: 
     dplyr,
     fuzzyjoin,
+    dtplyr  (>= 1.0.0),
     purrr,
     readr,
     stringr,

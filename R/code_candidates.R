@@ -53,8 +53,8 @@ stwide_to_numeric <- function(tbl, year) {
       ) %>%
       rename(
         GOV_vote = GOV0000,
-        USS0001_vote = USS0001,
-        USS0002_vote = USS0002,
+        USS1_vote = USS0001,
+        USS2_vote = USS0002,
         LGV_vote = LGV0000,
         ATG_vote = ATG0000,
         SOS_vote = SOS0000,
@@ -126,6 +126,10 @@ recode_abbrv <- function(vec, linebreak = FALSE) {
            USSEN1_party = "US Senate",
            USSEN2 = "US Senate Special",
            USSEN2_party = "US Senate Special",
+           USS1 = "US Senate",
+           USS1_party = "US Senate",
+           USS2 = "US Senate Special",
+           USS2_party = "US Senate Special",
            GOV =   "Governor",
            LGV =   "Lt Governor",
            SOS =   "Secretary of State",
