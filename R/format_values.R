@@ -173,6 +173,38 @@ std_contest <- function(vec, .type = NULL) {
 # 54 secs for 1 million rows
 
 
+#' Separate contest and number
+#'
+#' create a "code" that should be a seven-character code if properly formatted
+#' reassemble contest by code and name
+#'
+#' @param tbl long data
+#' @param ref_county dataframe with manual contest_codes for county-wide referenda to join
+#' @param ref_state same, but for statewide referenda
+#'
+#' @export
+#'
+code_c_name <- function(tbl, ref_county, ref_state) {
+  tbl <- lazy_dt(tbl)
+  ref_county <- lazy_dt(ref_county)
+  ref_state <- lazy_dt(ref_state)
+
+  ref_state <- select(ref_state, elec, contest_orig, contest_code)
+  ref_county <- select(ref_county, elec, county, contest_orig, contest_code)
+
+  tbl %>%
+    left_join(ref_state, by = c("contest_orig", "elec")) %>% # with state
+    mutate(contest = coalesce(contest_code, contest)) %>%
+    select(-contest_code) %>%
+    left_join(ref_county, by = c("elec", "county", "contest_orig")) %>% # now with c ount
+    mutate(contest_code = str_c(contest_code, " ")) %>%
+    mutate(contest_code = replace(contest_code, is.na(contest_code), "")) %>%
+    mutate(contest = str_c(contest_code, contest)) %>%
+    select(-contest_code) %>%
+    as_tibble() %>%
+    separate(contest, into =  c("contest_code", "contest_name"), sep = " ", extra = "merge") %>%
+    mutate(contest_type = str_extract(contest_code, "[A-Z]+"))
+}
 
 
 #' Standardize solicitor contest with district number, based on county
@@ -202,6 +234,25 @@ std_sc_solicit <- function(vec, is_solicit, county, data = sc_counties) {
   coded[!is_solicit] <- NA
 
   coded
+}
+
+#' Format solicitor and school district
+#'
+#' @param tbl long datafrae
+#'
+#' @export
+#'
+sol_fmt <- function(tbl) {
+  tbl %>%
+    as.data.table() %>%
+    mutate(is_solicitor = str_detect(contest, regex("Solicitor", ignore_case = TRUE))) %>%
+    mutate(is_csb = str_detect(contest, regex("^C(|C)SB", ignore_case = TRUE))) %>%
+    mutate(solicitor_fmt = std_sc_solicit(contest, is_solicitor, county)) %>%
+    mutate(csb_fmt = std_sc_first(contest, is_csb, "CSB ", "SCH")) %>%
+    mutate(contest = coalesce(solicitor_fmt, csb_fmt, contest)) %>%
+    select(-is_solicitor, -solicitor_fmt, -is_csb, -csb_fmt) %>%
+    select(elec:ballot_style, contest_orig, contest, everything()) %>%
+    as_tibble()
 }
 
 
@@ -268,6 +319,7 @@ stdnum_yesno <- function(vec) {
 #'
 choice_to_ascii <- function(tbl) {
   stopifnot(any(colnames(tbl) == "choice_name"))
+
   tbl %>%
     mutate(
       choice_name = str_replace(choice_name, "�", ""),
@@ -295,4 +347,75 @@ add_wi <- function(tbl, var) {
 
   tbl %>%
     mutate(!!var := replace(!!var, !!var == 0 & !is.na(.data[[votevar_name]]), 0.5))
+}
+
+
+
+#' Custom fixes for contest names that are hard to recode by regex
+#'
+#' @param tbl long tibble  of votes
+#' @param elec election year
+#'
+#' @export
+#'
+fix_custom <- function(tbl, elec) {
+  year <- as.integer(elec)
+  tbl <- as.data.table(tbl)
+
+  # unambiguously all-year changes
+  tbl_common <- tbl %>%
+    mutate(contest = replace(contest, contest_orig == "SEN45 State Senate District 45", "SEN0045 State Senate 45")) %>%
+    mutate(contest = replace(contest, contest_orig == "HOUS55 State House of Rep Dist 55", "HOU0055 State House of Rep Dist 55")) %>%
+    mutate(contest = replace(contest, contest_orig == "HOUS57 State House of Representatives Di", "HOU0057 State House of Rep Dist 57")) %>%
+    mutate(contest = replace(contest, (contest_orig %in% c("CON0001 US House of Representatives Dist", "CON0001 U.S. House of Representatives")) & county == "Kershaw", "USH0005 US House SC-05"))
+
+  if (year == 2018) {
+    out <- tbl_common %>%
+      mutate(contest = replace(contest, contest_orig %in% c("Lieutenant Governor", "Governor", "Lt Governor"), "GOV0000 Governor and Lieutenant Governor")) %>%
+      mutate(contest = replace(contest, contest_orig == "US House of Representatives", "USH0003 US House SC-03"))
+  }
+
+  if (year == 2016) {
+    out <- tbl_common %>%
+      mutate(contest = replace(contest, contest_orig == "US House of Representatives" & county == "Greenwood" & elec == "2016-11-08", "USH0003 US House SC-03")) %>%
+      mutate(contest = replace(contest, contest_orig == "State House of Rep Dist 122", "HOU0122 State House 122")) %>%
+      mutate(contest = replace(contest, contest_orig == "Treasurer" & county %in% c("Dorchester", "Oconee") & elec == "2016-11-08", "CTRES00 County Treasurer")) %>%
+      mutate(contest = replace(contest, contest_orig == "MUNCA00 Carlisle Mayor" & county %in% "Union", "MUN0001 Carlisle Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "MUN001 Mayor" & county %in% "Sumter",       "MUN0001 Sumter Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "MUN0003 Mayor" & county %in% "Kershaw",     "MUN0001 Camden Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "MUNABBE Mayor" & county %in% "Abbevile",    "MUN0001 Abbeville Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "MUNFLOR Mayor" & county %in% "Florence",    "MUN0001 Florence Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "MUNUN00 Union Mayor" & county %in% "Union", "MUN0001 Union Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "MUNWHIT Mayor" & county %in% "Newberry",    "MUN0001 Whitmire Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "MUNWOOD Mayor" & county %in% "Spartanburg", "MUN0001 Woodruff Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "TWNALLN Mayor" & county %in% "Allendale",   "MUN0001 Allendale Mayor")) %>%
+      mutate(contest = replace(contest, contest_orig == "WSH0014 Mayor" & county %in% "Greenwood",   "MUN0001 Ware Shoals Mayor"))
+  }
+
+  if (year == 2014) {
+    out <- tbl_common %>%
+      mutate(contest = replace(contest, contest_orig == "US House of Representatives" & county == "Greenwood", "USH0003 US House SC-03")) %>%
+      mutate(contest = replace(contest, str_detect(contest_orig, "(U.S.|US) House of Representatives District 7"), "USH0007 US House SC-07")) %>%
+      mutate(contest = replace(contest, contest_orig == "CCNL05 County Council District 5", "CCD0005 County Council District 5")) %>%
+      mutate(contest = replace(contest, contest_orig == "Treasurer", "CTRES00 County Treasurer"))
+  }
+
+  if (year == 2012) {
+    out <- tbl_common %>%
+      mutate(contest = replace(contest, contest_orig == "UDIST1 US House of Representatives Dist", "USH0001 US House SC-01")) %>%
+      mutate(contest = replace(contest, contest_orig == "U.S. House of Representatives District 5" & county == "Chesterfield", "USH0007 US House SC-07")) %>%
+      mutate(contest = replace(contest, contest_orig == "US House of Representatives" & county == "Greenwood", "USH0003 US House SC-03")) %>%
+      mutate(contest = replace(contest, contest_orig == "CTY ABB Mayor-Abbeville", "MUN0001 Abbeville Mayor"))
+  }
+
+  if (year == 2010) {
+    out <- tbl_common %>%
+      mutate(contest = replace(contest, contest_orig == "U.S. House of Representatives" & county == "Greenville", "USH0004 US House SC-04")) %>%
+      mutate(contest = replace(contest, contest_orig == "US House of Representatives" & county == "Greenwood", "USH0003 US House SC-03")) %>%
+      mutate(contest = replace(contest, contest_orig == "US House of Representatives" & county == "Newberry", "USH0005 US House SC-05")) %>%
+      mutate(contest = replace(contest, contest_orig == "NG0006 U.S. House of Rep" & county == "Florence", "USH0006 US House SC-06")) %>%
+      mutate(contest = replace(contest, contest_orig == " CCD10 County Council District 10" & county == "Beaufort", "CCD0010 County Council District 10"))
+  }
+
+  as_tibble(out)
 }
