@@ -62,21 +62,27 @@ cast_to_wide <- function(df = raw,
     rename(vote = choice_name)
 
   dist_wide <- dt_fmt %>%
-    dcast(elec + county + precinct_id + precinct + ballot_style + voter_id ~ contest_type, value.var = c("vote", "dist")) %>%
+    as.data.table() %>%
+    dcast(elec + county + precinct_id + precinct + ballot_style + voter_id ~ contest_type,
+          value.var = c("vote", "dist")) %>%
+    lazy_dt() %>%
     rename_at(vars(matches("vote_")), function(x) str_c(str_remove(x, "vote_"), "_vote")) %>%
     rename_at(vars(matches("dist_")), function(x) str_c(str_remove(x, "dist_"), "_dist"))
 
   # impute dist when the vote (therefore the indicator of district) is missing
   dists_long <- dist_wide %>%
+    as.data.table() %>%
     melt(id.vars = c("elec", "precinct_id", "ballot_style"),
          measure.vars = patterns("_dist$"),
          na.rm = TRUE,
          value.name = "dist",
          variable.name = "office") %>% # ignore abstentions
+    lazy_dt() %>%
     distinct()
 
-  if (nrow(distinct(dists_long,  elec, precinct_id, ballot_style, office)) != nrow(dists_long)) {
-    n_temp <- nrow(dists_long)
+  if (nrow(as.data.table(distinct(dists_long,  elec, precinct_id, ballot_style, office))) !=
+      nrow(as.data.table(dists_long))) {
+    n_temp <- nrow(as.data.table(dists_long))
     dists_long <- distinct(dists_long, elec, precinct_id, ballot_style, office, .keep_all = TRUE)
     warning(glue("multiple districts in the same office. Force dropping {n_temp - nrow(dists_long)} district-candidates!"))
   }
@@ -84,7 +90,9 @@ cast_to_wide <- function(df = raw,
 
   # check if each precinct - district number is unique
   district_table <- dists_long %>%
-    dcast(elec + precinct_id + ballot_style ~ office, value.var = "dist")
+    as.data.table() %>%
+    dcast(elec + precinct_id + ballot_style ~ office, value.var = "dist") %>%
+    lazy_dt()
 
   # join and coalesce
   dist_wide_add <- left_join(dist_wide, district_table,
@@ -94,24 +102,28 @@ cast_to_wide <- function(df = raw,
   # a lot of code just to coalesce any districts in any office that had a missing
   # due to abstension
   newdists <- dist_wide_add %>%
-    melt(id.vars = c("elec", "voter_id"),
-         measure = patterns("\\.(a|b)"),
-         na.rm = TRUE) %>%
-    mutate(type = str_extract(variable, ".*(?=\\.(a|b))"),
-           dist = str_extract(variable, "(a|b)$")) %>%
-    dcast(elec + voter_id + type ~ dist, value.var = "value") %>%
+    as_tibble() %>%
+    pivot_longer(c(matches("\\.(a|b)")),
+                 names_pattern = "([A-z]+)_dist\\.(a|b)",
+                 names_to = c("type", ".value"),
+                 values_to = "type",
+                 values_drop_na = TRUE) %>%
     mutate(dist = coalesce(a, b)) %>%
-    dcast(elec + voter_id ~ type, value.var = "dist")
+    pivot_wider(id_cols = c(elec, voter_id), names_from = type, values_from = dist)
 
   # merge in new districts (and drop old ones)
   dist_wide_imp <- dist_wide_add %>%
+    as_tibble() %>%
     select(-matches("\\.(a|b)")) %>%
     left_join(newdists, by = c("elec", "voter_id"))
 
   # other offices (use the 7-digit code on its own)
   df_wide_oth <- select_offices %>%
     filter(!contest_type %in% dist_offices) %>%
-    dcast(elec + voter_id ~ contest_code, value.var = "choice_name")
+    as_tibble() %>%
+    pivot_wider(id_cols = c(elec, voter_id),
+                names_from = contest_code,
+                values_from = choice_name)
 
   as_tibble(left_join(dist_wide_imp, df_wide_oth, by = c("elec", "voter_id")))
 }
