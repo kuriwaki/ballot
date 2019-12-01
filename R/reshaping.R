@@ -104,7 +104,7 @@ cast_to_wide <- function(df = raw,
   newdists <- dist_wide_add %>%
     as_tibble() %>%
     pivot_longer(c(matches("\\.(a|b)")),
-                 names_pattern = "([A-z]+)_dist\\.(a|b)",
+                 names_pattern = "([A-z]+_dist)\\.(a|b)",
                  names_to = c("type", ".value"),
                  values_to = "type",
                  values_drop_na = TRUE) %>%
