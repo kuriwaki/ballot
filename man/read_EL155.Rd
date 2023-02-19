@@ -4,8 +4,11 @@
 \alias{read_EL155}
 \title{Read a EL155 file}
 \usage{
-read_EL155(path = "build/input/SC_2010Gen/Allendale/EL155", cname,
-  precinct_regex = "(RUN DATE|ELECTION ID:)")
+read_EL155(
+  path = "build/input/SC_2010Gen/Allendale/EL155",
+  cname,
+  precinct_regex = "(RUN DATE|ELECTION ID:)"
+)
 }
 \arguments{
 \item{path}{path to raw file}

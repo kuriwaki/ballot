@@ -4,7 +4,9 @@
 \name{G2016_Dillon_EL155}
 \alias{G2016_Dillon_EL155}
 \title{Sample EL155}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 106553 rows and 3 columns.}
+\format{
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 106553 rows and 3 columns.
+}
 \source{
 South Carolina Election Commission
 }

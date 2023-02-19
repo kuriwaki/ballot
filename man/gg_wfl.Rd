@@ -25,6 +25,9 @@ gg_wfl(
 Waffle Plot of votes, colored
 }
 \examples{
-gg_wfl(filter(w_prez, PRS_party == 1), USH_party, nrows = 10)
+ \dontrun{
+   w_prez <- filter(wide, elec \%in\% c("2012-11-06", "2016-11-08"))
+   gg_wfl(filter(w_prez, PRS_party == 1), USH_party, nrows = 10)
+  }
 
 }

@@ -4,8 +4,11 @@
 \alias{slim_bind}
 \title{Bind a list of dataframes, but with only a subset of variables}
 \usage{
-slim_bind(df_list, regex, default = c("elec", "county", "precinct_id",
-  "ballot_style", "voter_id"))
+slim_bind(
+  df_list,
+  regex,
+  default = c("elec", "county", "precinct_id", "ballot_style", "voter_id")
+)
 }
 \arguments{
 \item{df_list}{A list of dataframes to bind.}

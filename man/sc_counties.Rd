@@ -4,11 +4,13 @@
 \name{sc_counties}
 \alias{sc_counties}
 \title{Information about South Carolina counties}
-\format{\describe{
+\format{
+\describe{
   \item{county}{name of the county, in sentence case (Aiken, Anderson)}
   \item{sol_race_code}{weight of the diamond, in carats}
   ...
-}}
+}
+}
 \usage{
 data(sc_counties)
 }
