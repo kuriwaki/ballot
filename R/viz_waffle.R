@@ -73,7 +73,7 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE, blank = FALSE, legen
     theme(plot.title = element_text(hjust = 0.5, size = rel(title_size)))
 
   if (!legend)
-    g0 <- g0 +  guides(fill = FALSE)
+    g0 <- g0 +  guides(fill = "none")
 
   #
   if (isTRUE(blank)) {
