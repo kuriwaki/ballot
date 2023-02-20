@@ -16,15 +16,17 @@
 #'   }
 #'
 #' @export
-gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE, blank = FALSE, legend = FALSE, title_size = 0.8) {
+gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE, blank = FALSE, legend = FALSE, title_size = 0.8, check_ncand = TRUE) {
   var <- enquo(var)
   var_name <- quo_name(var)
-  cand_name <- str_replace(var_name, "party", "ncand")
 
   cells <- crossing(y = 1:nrows, x = 1:nrows)
   n_cells <- nrows^2
 
+  if (check_ncand) {
+  cand_name <- str_replace(var_name, "party", "ncand")
   tbl_indiv <- filter(tbl_indiv, .data[[cand_name]] >= 2)
+}
 
   categ_table <-  tbl_indiv %>%
     count(!!var) %>%
