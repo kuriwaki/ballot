@@ -24,13 +24,15 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE, blank = FALSE, legen
   n_cells <- nrows^2
 
   if (check_ncand) {
-  cand_name <- str_replace(var_name, "party", "ncand")
-  tbl_indiv <- filter(tbl_indiv, .data[[cand_name]] >= 2)
-}
+    cand_name <- str_replace(var_name, "party", "ncand")
+    tbl_indiv <- filter(tbl_indiv, .data[[cand_name]] >= 2)
+  }
+
+  tbl_indiv <- tbl_indiv |>
+    filter(!is.na(!!var))
 
   categ_table <-  tbl_indiv %>%
     count(!!var) %>%
-    filter(!is.na(!!var)) %>%
     mutate(!!var := factor(!!var))
   vec_n <- length(tbl_indiv[[var_name]])
 
