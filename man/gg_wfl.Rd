@@ -9,9 +9,11 @@ gg_wfl(
   var,
   nrows = 31,
   rev = FALSE,
+  office_nam = NULL,
   blank = FALSE,
   legend = FALSE,
-  title_size = 0.8
+  title_size = 0.8,
+  check_ncand = TRUE
 )
 }
 \arguments{
@@ -20,6 +22,8 @@ gg_wfl(
 \item{var}{The variable in the dataset to use as the colors}
 
 \item{nrows}{number of rows and columns}
+
+\item{office_nam}{Title of the office. If NULL, use recode_abbrv of variable name}
 }
 \description{
 Waffle Plot of votes, colored

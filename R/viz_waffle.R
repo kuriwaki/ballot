@@ -3,6 +3,7 @@
 #'
 #'
 #' @param tbl_indiv A wide dataset of individual votes
+#' @param office_nam Title of the office. If NULL, use recode_abbrv of variable name
 #' @param var The variable in the dataset to use as the colors
 #' @param nrows number of rows and columns
 #'
@@ -16,7 +17,10 @@
 #'   }
 #'
 #' @export
-gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE, blank = FALSE, legend = FALSE, title_size = 0.8, check_ncand = TRUE) {
+gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE,
+                   office_nam = NULL,
+                   blank = FALSE,
+                   legend = FALSE, title_size = 0.8, check_ncand = TRUE) {
   var <- enquo(var)
   var_name <- quo_name(var)
 
@@ -64,6 +68,9 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE, blank = FALSE, legen
   print_pct <- percent(max(categ_table$n)/(nrows^2))
 
   # plot
+  if (is.null(office_nam))
+    office_nam <- recode_abbrv(var_name)
+
   g0 <- ggplot(cells, aes(x = x, y = y, fill = category)) +
     scale_fill_manual(name = "",
                       values = c("1" = "#b2182b", "-1" = "#2166ac", "0.5" = "#ffffbf", "0" = "#999999"),
@@ -73,7 +80,7 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE, blank = FALSE, legen
                        trans = 'reverse') +
     coord_equal() +
     theme_void() +
-    labs(title = glue("{recode_abbrv(var_name)} (n = {str_c(round(vec_n/1000), 'k')})" )) +
+    labs(title = glue("{office_nam} (n = {str_c(round(vec_n/1000), 'k')})" )) +
     theme(plot.title = element_text(hjust = 0.5, size = rel(title_size)))
 
   if (!legend)
@@ -82,7 +89,8 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE, blank = FALSE, legen
   #
   if (isTRUE(blank)) {
     gg <- g0 + geom_blank() +
-      theme(plot.caption = element_text(color = "white", hjust = 0.5, size = rel(0.8)))
+      theme(plot.caption = element_text(color = "white", hjust = 0.5, size = rel(0.8)),
+            plot.title = element_text(color = "white"))
   }
 
   if (!blank) {
