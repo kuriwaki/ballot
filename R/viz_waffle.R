@@ -80,7 +80,7 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE,
                        trans = 'reverse') +
     coord_equal() +
     theme_void() +
-    labs(title = glue("{office_nam} (n = {str_c(round(vec_n/1000), 'k')})" )) +
+    labs(title = glue("{office_nam}\n(n = {str_c(round(vec_n/1000), 'k')})" )) +
     theme(plot.title = element_text(hjust = 0.5, size = rel(title_size)))
 
   if (!legend)
