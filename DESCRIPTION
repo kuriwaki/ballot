@@ -21,6 +21,7 @@ Depends:
     data.table,
     glue,
     foreach,
+    ggtext,
     noncensus
 Encoding: UTF-8
 RoxygenNote: 7.2.1

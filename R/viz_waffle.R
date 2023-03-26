@@ -80,8 +80,8 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE,
                        trans = 'reverse') +
     coord_equal() +
     theme_void() +
-    labs(title = glue("{office_nam}\n(N = {str_c(round(vec_n/1000), 'k')})" )) +
-    theme(plot.title = element_text(hjust = 0.5, size = rel(title_size)))
+    labs(title = glue("{office_nam}<br>(_N_ = {str_c(round(vec_n/1000), 'k')})" )) +
+    theme(plot.title = ggtext::element_markdown(hjust = 0.5, size = rel(title_size)))
 
   if (!legend)
     g0 <- g0 +  guides(fill = "none")
@@ -90,7 +90,7 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE,
   if (isTRUE(blank)) {
     gg <- g0 + geom_blank() +
       theme(plot.caption = element_text(color = "white", hjust = 0.5, size = rel(0.8)),
-            plot.title = element_text(color = "white"))
+            plot.title = ggtext::element_markdown(color = "white"))
   }
 
   if (!blank) {
