@@ -247,13 +247,10 @@ identify_voter <- function(df) {
 #' @param df A dataset with county and voter ID
 #' @param st state
 #'
-#' @import noncensus purrr
+#' @import purrr
 #' @export
 #'
 add_id <- function(df, st = "SC") {
-  data("counties")
-
-
   max_d_v <- str_length(as.character(max(df$voter_id, na.rm = TRUE)))
   max_d_p <- str_length(as.character(max(df$precinct_id, na.rm = TRUE)))
 

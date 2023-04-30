@@ -9,7 +9,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, include = FALSE}
 dir <- "~/Dropbox/EL155s"
-library(noncensus)
 library(tidyverse)
 library(foreach)
 library(ballot)
