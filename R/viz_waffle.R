@@ -7,8 +7,6 @@
 #' @param var The variable in the dataset to use as the colors
 #' @param nrows number of rows and columns
 #'
-#'
-#'
 #' @import ggplot2
 #' @examples
 #'  \dontrun{
@@ -17,38 +15,40 @@
 #'   }
 #'
 #' @export
-gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE,
+gg_wfl <- function(tbl_indiv, var,
+                   nrows = 31, rev = FALSE,
                    office_nam = NULL,
                    blank = FALSE,
                    legend = FALSE, title_size = 0.8, check_ncand = TRUE) {
   var <- enquo(var)
   var_name <- quo_name(var)
 
-  cells <- crossing(y = 1:nrows, x = 1:nrows)
-  n_cells <- nrows^2
-
+  # filter uncontested
   if (check_ncand) {
     cand_name <- str_replace(var_name, "party", "ncand")
     tbl_indiv <- filter(tbl_indiv, .data[[cand_name]] >= 2)
   }
 
+  # Main table ---
   tbl_indiv <- tbl_indiv |>
     filter(!is.na(!!var))
 
   categ_table <-  tbl_indiv %>%
     count(!!var) %>%
     mutate(!!var := factor(!!var))
-  vec_n <- length(tbl_indiv[[var_name]])
 
+  vec_n <- length(tbl_indiv[[var_name]])
+  n_cells <- nrows^2
   categ_table$n  <- round(categ_table$n * (n_cells)/(vec_n))
 
-  # adjust for rounding
+  ## adjust for rounding
   if (sum(categ_table$n) != n_cells) {
     diff <- n_cells - sum(categ_table$n)
     categ_table <- categ_table %>%
       mutate(n = n + (n == max(n))*diff)
   }
 
+  # sort ----
   if (rev) {
     categ_table <- categ_table %>%
       mutate(!!var := fct_rev(as.character(!!var))) %>%
@@ -59,15 +59,14 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE,
       mutate(!!var := factor(!!var, c(-1, 0.5, 0, 1))) %>%
       arrange(!!var)
   }
-  # enter everyone
-  cells <- cells %>%
-    mutate(category = rep(pull(categ_table, !!var),
-                          times = categ_table$n))
 
-  # text
+  # enter everyone ----
+  cells <- crossing(y = 1:nrows, x = 1:nrows) |>
+    mutate(category = rep(pull(categ_table, !!var), times = categ_table$n))
+
+  # plot ---
+  ## text
   print_pct <- percent(max(categ_table$n)/(nrows^2))
-
-  # plot
   if (is.null(office_nam))
     office_nam <- recode_abbrv(var_name)
 
@@ -75,7 +74,6 @@ gg_wfl <- function(tbl_indiv, var, nrows = 31, rev = FALSE,
     scale_fill_manual(name = "",
                       values = c("1" = "#b2182b", "-1" = "#2166ac", "0.5" = "#ffffbf", "0" = "#999999"),
                       labels = c("1" = "Republican", "-1" = "Democrat", "0.5" = "Other", "0" = "Drop-off")) +
-    # scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0),
                        trans = 'reverse') +
     coord_equal() +
