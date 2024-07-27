@@ -8,6 +8,7 @@
 #' @param nrows number of rows and columns
 #'
 #' @import ggplot2
+#' @importFrom dplyr collect
 #' @examples
 #'  \dontrun{
 #'    w_prez <- filter(wide, elec %in% c("2012-11-06", "2016-11-08"))
@@ -33,8 +34,9 @@ gg_wfl <- function(tbl_indiv, var,
   tbl_indiv <- tbl_indiv |>
     filter(!is.na(!!var))
 
-  categ_table <-  tbl_indiv %>%
-    count(!!var) %>%
+  categ_table <-  tbl_indiv |>
+    count(!!var) |>
+    collect() |>
     mutate(!!var := factor(!!var))
 
   vec_n <- length(tbl_indiv[[var_name]])
@@ -44,19 +46,19 @@ gg_wfl <- function(tbl_indiv, var,
   ## adjust for rounding
   if (sum(categ_table$n) != n_cells) {
     diff <- n_cells - sum(categ_table$n)
-    categ_table <- categ_table %>%
+    categ_table <- categ_table |>
       mutate(n = n + (n == max(n))*diff)
   }
 
   # sort ----
   if (rev) {
-    categ_table <- categ_table %>%
-      mutate(!!var := fct_rev(as.character(!!var))) %>%
+    categ_table <- categ_table |>
+      mutate(!!var := fct_rev(as.character(!!var))) |>
       arrange(!!var)
   }
   if (!rev) {
-    categ_table <- categ_table %>%
-      mutate(!!var := factor(!!var, c(-1, 0.5, 0, 1))) %>%
+    categ_table <- categ_table |>
+      mutate(!!var := factor(!!var, c(-1, 0.5, 0, 1))) |>
       arrange(!!var)
   }
 
