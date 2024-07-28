@@ -8,7 +8,12 @@
 #' @param nrows number of rows and columns
 #'
 #' @import ggplot2
+#' @import dplyr
 #' @importFrom dplyr collect
+#' @importFrom tidyr crossing
+#' @importFrom glue glue
+#' @importFrom scales percent
+#'
 #' @examples
 #'  \dontrun{
 #'    w_prez <- filter(wide, elec %in% c("2012-11-06", "2016-11-08"))
@@ -27,7 +32,7 @@ gg_wfl <- function(tbl_indiv, var,
   # filter uncontested
   if (check_ncand) {
     cand_name <- str_replace(var_name, "party", "ncand")
-    tbl_indiv <- filter(tbl_indiv, .data[[cand_name]] >= 2)
+    tbl_indiv <- filter(tbl_indiv, !!sym(cand_name) >= 2)
   }
 
   # Main table ---
@@ -39,7 +44,7 @@ gg_wfl <- function(tbl_indiv, var,
     collect() |>
     mutate(!!var := factor(!!var))
 
-  vec_n <- length(tbl_indiv[[var_name]])
+  vec_n <- count(tbl_indiv) |> collect() |> pull(n)
   n_cells <- nrows^2
   categ_table$n  <- round(categ_table$n * (n_cells)/(vec_n))
 
@@ -68,7 +73,7 @@ gg_wfl <- function(tbl_indiv, var,
 
   # plot ---
   ## text
-  print_pct <- percent(max(categ_table$n)/(nrows^2))
+  print_pct <- percent(max(categ_table$n)/(nrows^2), accuracy = 1)
   if (is.null(office_nam))
     office_nam <- recode_abbrv(var_name)
 
